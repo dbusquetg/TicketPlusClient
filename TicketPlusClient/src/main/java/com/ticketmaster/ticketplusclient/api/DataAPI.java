@@ -8,6 +8,7 @@ package com.ticketmaster.ticketplusclient.api;
  *
  * @author Christian
  */
+// TODO: API para le interaccion con otros endpoints del servicio TicketPlus
 public interface DataAPI {
-    
+    //Implementar en fases posteriores
 }

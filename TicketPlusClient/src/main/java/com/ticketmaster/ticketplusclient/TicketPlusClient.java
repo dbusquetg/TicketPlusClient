@@ -14,7 +14,7 @@ import org.springframework.boot.SpringApplication;
  *
  * @author Christian
  */
-public class TicketPlusClient extends JFrame implements CommandLineRunner {
+public class TicketPlusClient extends JFrame{
 
     private LoginGUI loginGui;
 
@@ -27,23 +27,15 @@ public class TicketPlusClient extends JFrame implements CommandLineRunner {
     }
 
     /**
-     * Metodo static main que invoco SpringApplication.run
      *
      * @param args
      */
     public static void main(String[] args){
-        /**
-         * Se pasa la propia clase TicketPlusClient.class como argumentos
-         */
-        SpringApplication.run(TicketPlusClient.class, args);
-    }
-    /**
-     *Metodo run invocado por SpringApplication
-     *
-     * @param args
-     * @throws Exception
-     */
-    public void run(String... args) throws Exception {
-        SwingUtilities.invokeLater(() -> loginGui.setVisible(true));
+        
+        SwingUtilities.invokeLater(() -> {
+            LoginGUI loginGui = new LoginGUI();
+            loginGui.setVisible(true);
+        });
+        
     }
 }
