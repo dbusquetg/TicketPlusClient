@@ -9,7 +9,9 @@ Estructura proyecto
 
 UI
   LoginGUI
-  DashboardGUI
+  DashboardBaseGUI
+  DashboardAgentGUI
+  DashboardUserGUI
 api
   Apiclient
   AuthAPI
