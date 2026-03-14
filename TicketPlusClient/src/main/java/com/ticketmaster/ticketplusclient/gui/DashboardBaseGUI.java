@@ -25,11 +25,11 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
      */
     public DashboardBaseGUI() {
         initComponents();
-        JButton [] btns = {jButton1, jButton2, jButton3, jButton4, jButton5,  jButton6};
-        for(JButton btn : btns){
-            btn.setBackground(new Color(21,25,28));
+        JButton[] btns = {jButton1, jButton2, jButton3, jButton4, jButton5, jButton6};
+        for (JButton btn : btns) {
+            btn.setBackground(new Color(21, 25, 28));
             btn.setUI(new BasicButtonUI());
-            btn.addMouseListener(new MouseListener(){
+            btn.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                 }
@@ -44,15 +44,14 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    btn.setBackground(new Color(54,81,207));
+                    btn.setBackground(new Color(54, 81, 207));
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    btn.setBackground(new Color(21,25,28));
+                    btn.setBackground(new Color(21, 25, 28));
                 }
-            
-            
+
             });
         }
     }
@@ -75,6 +74,8 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        Home = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlCTop = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -155,6 +156,25 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
             }
         });
         pnlSide.add(jButton5);
+
+        jPanel3.setBackground(new java.awt.Color(21, 25, 28));
+        jPanel3.setPreferredSize(new java.awt.Dimension(50, 150));
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 40));
+
+        Home.setBackground(new java.awt.Color(34, 40, 44));
+        Home.setForeground(new java.awt.Color(255, 255, 255));
+        Home.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Home_1.png"))); // NOI18N
+        Home.setFocusPainted(false);
+        Home.setPreferredSize(new java.awt.Dimension(40, 40));
+        Home.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HomeActionPerformed(evt);
+            }
+        });
+        jPanel3.add(Home);
+        Home.getAccessibleContext().setAccessibleDescription("");
+
+        pnlSide.add(jPanel3);
 
         pnlRoot.add(pnlSide, java.awt.BorderLayout.WEST);
 
@@ -258,11 +278,20 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void HomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeActionPerformed
+        // TODO add your handling code here:
+        //Pendiente hacer el logout en Server
+        LoginGUI login = new LoginGUI();
+        login.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_HomeActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Home;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -272,6 +301,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel pnlCBottom;
     private javax.swing.JPanel pnlCCenter;
     private javax.swing.JPanel pnlCTop;
