@@ -6,8 +6,8 @@ package com.ticketmaster.ticketplusclient.model;
 
 /**
  *
- * @author Christian
+ * @author 
  */
 public class DataResponse {
-    //Prueba
+    //Esta clase aun no se implementa, sera la DTO de las respuestas posteriores del servidor
 }

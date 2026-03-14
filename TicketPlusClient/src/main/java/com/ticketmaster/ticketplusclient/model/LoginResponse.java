@@ -6,8 +6,20 @@ package com.ticketmaster.ticketplusclient.model;
 
 /**
  *
- * @author Christian
+ * @author 
  */
+// TODO: Crear formato de respuesta del Endpoint Login
 public class LoginResponse {
+    
+    //Crear variables de los tipos de respuesta del Endpoint
+    /*private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }*/
     
 }
