@@ -219,6 +219,7 @@ public class LoginGUI extends javax.swing.JFrame {
         String password = new String(PasswordTextField.getPassword());
         
         
+        
     }//GEN-LAST:event_LoginButtonActionPerformed
 
 
