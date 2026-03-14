@@ -29,7 +29,7 @@ import retrofit2.Response;
 @Component
 public class LoginGUI extends javax.swing.JFrame {
 
-    private DashboardGUI dashborad;
+    private DashboardBaseGUI dashborad;
 
 
     /**

@@ -18,12 +18,12 @@ import javax.swing.plaf.basic.BasicButtonUI;
  * @author Christian
  */
 @Component
-public class DashboardGUI extends javax.swing.JFrame {
+public class DashboardAgentGUI extends javax.swing.JFrame {
 
     /**
      * Creates new form inicio
      */
-    public DashboardGUI() {
+    public DashboardAgentGUI() {
         initComponents();
         JButton [] btns = {jButton1, jButton2, jButton3, jButton4, jButton5,  jButton6};
         for(JButton btn : btns){

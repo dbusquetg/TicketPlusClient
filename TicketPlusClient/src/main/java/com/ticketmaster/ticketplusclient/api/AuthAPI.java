@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 
 /**
  *
- * API login de TicketPlus
+ * API login del Backend
  * 
  * Envia peticion POST al endpoint /api/login con las credenciales de usuario en 
  * el formato de la clase LoginRequest. Si las credenciales son correctas se recibe
