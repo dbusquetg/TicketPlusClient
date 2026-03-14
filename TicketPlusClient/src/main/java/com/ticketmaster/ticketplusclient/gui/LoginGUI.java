@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.event.ActionListener;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -191,6 +192,8 @@ public class LoginGUI extends javax.swing.JFrame {
         java.awt.FlowLayout flowLayout1 = new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 80);
         flowLayout1.setAlignOnBaseline(true);
         CentralPanelLogin.setLayout(flowLayout1);
+
+        iconTruckLabel.setIcon(new ImageIcon(getClass().getResource("/icons/logo_ticketplus.png")));
         CentralPanelLogin.add(iconTruckLabel);
 
         getContentPane().add(CentralPanelLogin, java.awt.BorderLayout.CENTER);
@@ -212,7 +215,10 @@ public class LoginGUI extends javax.swing.JFrame {
 
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
-   
+        String username = UserTextField.getText();
+        String password = new String(PasswordTextField.getPassword());
+        
+        
     }//GEN-LAST:event_LoginButtonActionPerformed
 
 
