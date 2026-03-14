@@ -11,7 +11,7 @@ package com.ticketmaster.ticketplusclient.model;
 // TODO: Crear formato de la request al endpoint Login
 public class LoginRequest {
 
-    //Crear variables que de los datos que se enviaran al endpoint de Login "user", "password"
+    //Crear variables que de los datos que se enviaran al endpoint de Login "nomusuari", "contrasenya"
     /*private String username;
     private String password;
 

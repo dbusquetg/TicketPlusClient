@@ -18,7 +18,7 @@ import retrofit2.http.POST;
  * el formato de la clase LoginRequest. Si las credenciales son correctas se recibe
  * una respuesta en el formato de LoginResponse.
  * 
- * @param request Objeto que contiene las credenciales de usuario "user", "password"
+ * @param request Objeto que contiene las credenciales de usuario "nomusuari", "contrasenya"
  * @return Call<LoginResponse> Objeto retrofit que ejecuta la petiucion HTTP y 
  * obtiene la respuesta del servidor
  * 
