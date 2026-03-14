@@ -31,7 +31,6 @@ public class LoginGUI extends javax.swing.JFrame {
 
     private DashboardBaseGUI dashborad;
 
-
     /**
      * Creates new form LoginGUI
      */
@@ -222,15 +221,53 @@ public class LoginGUI extends javax.swing.JFrame {
 
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
+
         String username = UserTextField.getText();
         String password = new String(PasswordTextField.getPassword());
-        
+
         if (username.isEmpty() || password.isEmpty()) {
             UIManager.put("OptionPane.background", new Color(30, 40, 44));
             UIManager.put("Panel.background", new Color(30, 40, 44));
             UIManager.put("OptionPane.messageForeground", Color.WHITE);
             JOptionPane.showMessageDialog(null, "Usuario y contraseña no pueden estar vacíos");
-        }else{
+        } else {
+            AuthAPI api = ClientAPI.getAuthAPI();
+
+            LoginRequest request = new LoginRequest(username, password);
+            Call<LoginResponse> call = api.login(request);
+
+            try {
+                Response<LoginResponse> response = call.execute();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+
+                    if (loginResponse.isExit()) {
+                        dashborad = new DashboardBaseGUI();
+                        dashborad.setVisible(true);
+                        this.dispose();
+                    } else {
+                        UIManager.put("OptionPane.background", new Color(30, 40, 44));
+                        UIManager.put("Panel.background", new Color(30, 40, 44));
+                        UIManager.put("OptionPane.messageForeground", Color.WHITE);
+                        JOptionPane.showMessageDialog(this, loginResponse.getMissatge());
+                    }
+
+                } else {
+                    UIManager.put("OptionPane.background", new Color(30, 40, 44));
+                    UIManager.put("Panel.background", new Color(30, 40, 44));
+                    UIManager.put("OptionPane.messageForeground", Color.WHITE);
+                    JOptionPane.showMessageDialog(this,
+                            "Error del servidor. Código HTTP: " + response.code());
+                }
+
+            } catch (IOException ex) {
+                UIManager.put("OptionPane.background", new Color(30, 40, 44));
+                UIManager.put("Panel.background", new Color(30, 40, 44));
+                UIManager.put("OptionPane.messageForeground", Color.WHITE);
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo conectar con el servidor: " + ex.getMessage());
+            }
             /*AuthAPI api = ClientAPI.getAuthAPI();
         
             LoginRequest request = new LoginRequest(username, password);
@@ -254,7 +291,7 @@ public class LoginGUI extends javax.swing.JFrame {
                 System.getLogger(LoginGUI.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }*/
         }
-   
+
     }//GEN-LAST:event_LoginButtonActionPerformed
 
 
