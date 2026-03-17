@@ -9,13 +9,8 @@ import com.ticketmaster.ticketplusclient.api.ClientAPI;
 import com.ticketmaster.ticketplusclient.model.LoginRequest;
 import com.ticketmaster.ticketplusclient.model.LoginResponse;
 import java.awt.Color;
-import org.hibernate.annotations.Comment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -24,7 +19,7 @@ import retrofit2.Response;
 
 /**
  *
- * @author Christian
+ * @author Christian / Erik
  */
 @Component
 public class LoginGUI extends javax.swing.JFrame {
@@ -242,7 +237,7 @@ public class LoginGUI extends javax.swing.JFrame {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse loginResponse = response.body();
 
-                    if (loginResponse.isExit()) {
+                    if (loginResponse.isSuccess()) {
                         dashborad = new DashboardBaseGUI();
                         dashborad.setVisible(true);
                         this.dispose();
@@ -250,7 +245,7 @@ public class LoginGUI extends javax.swing.JFrame {
                         UIManager.put("OptionPane.background", new Color(30, 40, 44));
                         UIManager.put("Panel.background", new Color(30, 40, 44));
                         UIManager.put("OptionPane.messageForeground", Color.WHITE);
-                        JOptionPane.showMessageDialog(this, loginResponse.getMissatge());
+                        JOptionPane.showMessageDialog(this, loginResponse.getMessage());
                     }
 
                 } else {
@@ -268,28 +263,7 @@ public class LoginGUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this,
                         "No se pudo conectar con el servidor: " + ex.getMessage());
             }
-            /*AuthAPI api = ClientAPI.getAuthAPI();
-        
-            LoginRequest request = new LoginRequest(username, password);
 
-            Call<LoginResponse> call = api.login(request);
-
-            Response<LoginResponse> response;
-
-            try {
-                response = call.execute();
-
-                if(response.isSuccessful()){
-
-                    dashborad.setVisible(true);
-                    this.setVisible(false);
-
-                }else{
-                    //JOptionPane aqui, por medio de IF y dependiendo del valor de response.code() mostrar un mensaje u otro
-                }
-            } catch (IOException ex) {
-                System.getLogger(LoginGUI.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            }*/
         }
 
     }//GEN-LAST:event_LoginButtonActionPerformed

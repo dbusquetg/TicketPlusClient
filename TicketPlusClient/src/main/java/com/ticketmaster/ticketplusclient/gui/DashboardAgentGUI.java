@@ -18,44 +18,11 @@ import javax.swing.plaf.basic.BasicButtonUI;
  * @author Christian
  */
 @Component
-public class DashboardAgentGUI extends javax.swing.JFrame {
+public class DashboardAgentGUI extends DashboardBaseGUI {
 
     /**
      * Creates new form inicio
      */
-    public DashboardAgentGUI() {
-        initComponents();
-        JButton [] btns = {jButton1, jButton2, jButton3, jButton4, jButton5,  jButton6};
-        for(JButton btn : btns){
-            btn.setBackground(new Color(21,25,28));
-            btn.setUI(new BasicButtonUI());
-            btn.addMouseListener(new MouseListener(){
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                }
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    btn.setBackground(new Color(54,81,207));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    btn.setBackground(new Color(21,25,28));
-                }
-            
-            
-            });
-        }
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -66,217 +33,15 @@ public class DashboardAgentGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pnlRoot = new javax.swing.JPanel();
-        pnlSide = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        pnlCenter = new javax.swing.JPanel();
-        pnlCTop = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        pnlCCenter = new javax.swing.JPanel();
-        pnlCBottom = new javax.swing.JPanel();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        pnlRoot.setLayout(new java.awt.BorderLayout());
-
-        pnlSide.setBackground(new java.awt.Color(21, 25, 28));
-        pnlSide.setPreferredSize(new java.awt.Dimension(80, 0));
-
-        jPanel2.setBackground(new java.awt.Color(21, 25, 28));
-        jPanel2.setPreferredSize(new java.awt.Dimension(50, 150));
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 40));
-
-        jButton6.setBackground(new java.awt.Color(34, 40, 44));
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setFocusPainted(false);
-        jButton6.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-        jPanel2.add(jButton6);
-
-        pnlSide.add(jPanel2);
-
-        jButton1.setBackground(new java.awt.Color(34, 40, 44));
-        jButton1.setFocusPainted(false);
-        jButton1.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        pnlSide.add(jButton1);
-
-        jButton2.setBackground(new java.awt.Color(34, 40, 44));
-        jButton2.setFocusPainted(false);
-        jButton2.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        pnlSide.add(jButton2);
-
-        jButton3.setBackground(new java.awt.Color(34, 40, 44));
-        jButton3.setFocusPainted(false);
-        jButton3.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-        pnlSide.add(jButton3);
-
-        jButton4.setBackground(new java.awt.Color(34, 40, 44));
-        jButton4.setFocusPainted(false);
-        jButton4.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-        pnlSide.add(jButton4);
-
-        jButton5.setBackground(new java.awt.Color(34, 40, 44));
-        jButton5.setFocusPainted(false);
-        jButton5.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-        pnlSide.add(jButton5);
-
-        pnlRoot.add(pnlSide, java.awt.BorderLayout.WEST);
-
-        pnlCenter.setBackground(new java.awt.Color(34, 40, 44));
-        pnlCenter.setPreferredSize(new java.awt.Dimension(697, 507));
-        pnlCenter.setLayout(new java.awt.BorderLayout());
-
-        pnlCTop.setBackground(new java.awt.Color(34, 40, 44));
-        pnlCTop.setPreferredSize(new java.awt.Dimension(0, 100));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI Light", 0, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Overview");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI Light", 0, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Showing all task for today");
-
-        javax.swing.GroupLayout pnlCTopLayout = new javax.swing.GroupLayout(pnlCTop);
-        pnlCTop.setLayout(pnlCTopLayout);
-        pnlCTopLayout.setHorizontalGroup(
-            pnlCTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCTopLayout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addGroup(pnlCTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addContainerGap(658, Short.MAX_VALUE))
-        );
-        pnlCTopLayout.setVerticalGroup(
-            pnlCTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlCTopLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
-
-        pnlCenter.add(pnlCTop, java.awt.BorderLayout.NORTH);
-
-        pnlCCenter.setBackground(new java.awt.Color(34, 40, 44));
-
-        javax.swing.GroupLayout pnlCCenterLayout = new javax.swing.GroupLayout(pnlCCenter);
-        pnlCCenter.setLayout(pnlCCenterLayout);
-        pnlCCenterLayout.setHorizontalGroup(
-            pnlCCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 901, Short.MAX_VALUE)
-        );
-        pnlCCenterLayout.setVerticalGroup(
-            pnlCCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 461, Short.MAX_VALUE)
-        );
-
-        pnlCenter.add(pnlCCenter, java.awt.BorderLayout.CENTER);
-
-        pnlCBottom.setBackground(new java.awt.Color(34, 40, 44));
-        pnlCBottom.setPreferredSize(new java.awt.Dimension(0, 100));
-
-        javax.swing.GroupLayout pnlCBottomLayout = new javax.swing.GroupLayout(pnlCBottom);
-        pnlCBottom.setLayout(pnlCBottomLayout);
-        pnlCBottomLayout.setHorizontalGroup(
-            pnlCBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 901, Short.MAX_VALUE)
-        );
-        pnlCBottomLayout.setVerticalGroup(
-            pnlCBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
-        pnlCenter.add(pnlCBottom, java.awt.BorderLayout.SOUTH);
-
-        pnlRoot.add(pnlCenter, java.awt.BorderLayout.CENTER);
-
-        getContentPane().add(pnlRoot, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel pnlCBottom;
-    private javax.swing.JPanel pnlCCenter;
-    private javax.swing.JPanel pnlCTop;
-    private javax.swing.JPanel pnlCenter;
-    private javax.swing.JPanel pnlRoot;
-    private javax.swing.JPanel pnlSide;
     // End of variables declaration//GEN-END:variables
 }
