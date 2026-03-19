@@ -4,6 +4,7 @@ Arquiterctura
 
 -UX: Swing
 -Cliente API: Retrofit
+-Control de sesion: Token JWT
 
 Estructura proyecto
 
