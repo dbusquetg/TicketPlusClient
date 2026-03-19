@@ -16,16 +16,6 @@ import org.springframework.boot.SpringApplication;
  */
 public class TicketPlusClient extends JFrame{
 
-    private LoginGUI loginGui;
-
-    /**
-     * Sobre carga de clase Main con la incializacion del JFrame
-     *
-     */
-    public TicketPlusClient(){
-        loginGui = new LoginGUI();
-    }
-
     /**
      *
      * @param args
