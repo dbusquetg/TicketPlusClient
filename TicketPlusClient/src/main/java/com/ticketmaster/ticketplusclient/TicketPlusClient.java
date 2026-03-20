@@ -7,8 +7,6 @@ package com.ticketmaster.ticketplusclient;
 import com.ticketmaster.ticketplusclient.gui.LoginGUI;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 
 /**
  *

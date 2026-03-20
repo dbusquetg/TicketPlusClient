@@ -6,35 +6,45 @@ package com.ticketmaster.ticketplusclient.model;
 
 /**
  *
- * @author
+ * @author Erik
  */
-// TODO: Crear formato de respuesta del Endpoint Login
 public class LoginResponse {
 
-    private boolean success;
-    private String message;
+    private String token;
+    private String role;
+    private String username;
 
     public LoginResponse() {
     }
 
-    public LoginResponse(boolean success, String message) {
-        this.success = success;
-        this.message = message;
+    public LoginResponse(String token, String role, String username) {
+        this.token = token;
+        this.role = role;
+        this.username = username;
     }
 
-    public boolean isSuccess() {
-        return success;
+    public String getToken() {
+        return token;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getMessage() {
-        return message;
+    public String getRole() {
+        return role;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
+    public String getUsername(){
+        return username;
+    }
+    
+    @Override
+    public String toString(){
+        return "LoginResponse{username='"+username+"', role='"+role+"'}";
     }
 }

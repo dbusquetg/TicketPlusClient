@@ -6,28 +6,24 @@ package com.ticketmaster.ticketplusclient.model;
 
 /**
  *
- * @author
+ * @author Erik
  */
-// TODO: Crear formato de la request al endpoint Login
 public class LoginRequest {
 
-    private String name;
+    private String username;
     private String password;
 
-    public LoginRequest() {
-    }
-
-    public LoginRequest(String name, String password) {
-        this.name = name;
+    public LoginRequest(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

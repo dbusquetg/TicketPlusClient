@@ -14,19 +14,29 @@ import retrofit2.http.POST;
  *
  * API login del Backend
  * 
- * Envia peticion POST al endpoint /api/login con las credenciales de usuario en 
+ * Envia peticion POST al endpoint /api/auth/login con las credenciales de usuario en 
  * el formato de la clase LoginRequest. Si las credenciales son correctas se recibe
  * una respuesta en el formato de LoginResponse.
  * 
- * @param request Objeto que contiene las credenciales de usuario "nomusuari", "contrasenya"
- * @return Call<LoginResponse> Objeto retrofit que ejecuta la petiucion HTTP y 
- * obtiene la respuesta del servidor
+ * @param request Objeto que contiene las credenciales de usuario "username", "password"
  * 
  * @author Christian
  */
 public interface AuthAPI {
     
-    @POST("/api/login")
+    
+    /**
+     * Body: {"username": "...", "password": "..."}
+     * Response 200: {"token": "...", "role": "..", "username": "..."}
+     */
+    @POST("/api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
+    
+    /**
+     * El header es inyectado automaticamente por OkHttp: Authorization: Bearer <token>
+     *Responde 204: sin cuerpo
+     */
+    @POST("api/auth/logout")
+    Call<Void> logout();
     
 }
