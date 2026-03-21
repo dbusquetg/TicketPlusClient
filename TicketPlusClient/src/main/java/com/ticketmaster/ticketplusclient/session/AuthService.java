@@ -85,6 +85,11 @@ public class AuthService {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response){
                 SwingUtilities.invokeLater(() -> {
+                    if(response.isSuccessful()){
+                        System.out.println("Logout OK — servidor respondió: " + response.code());
+                    } else {
+                        System.err.println("Logout FALLIDO — servidor respondió: " + response.code());
+                    }
                     SessionManager.getInstance().clearSession();
                     ClientAPI.reset();
                     onComplete.run();
