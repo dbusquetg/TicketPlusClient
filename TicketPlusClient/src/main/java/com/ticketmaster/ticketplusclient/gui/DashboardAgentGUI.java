@@ -4,25 +4,23 @@
  */
 package com.ticketmaster.ticketplusclient.gui;
 
-import org.springframework.stereotype.Component;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
  *
  * @author Christian
  */
-@Component
 public class DashboardAgentGUI extends DashboardBaseGUI {
 
-    /**
-     * Creates new form inicio
-     */
+    public DashboardAgentGUI(){
+        super();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -38,6 +36,61 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    protected void setupRoleDashboard() {
+        JPanel centerPanel = getCenterPanel();
+        centerPanel.setLayout(new BorderLayout(10, 10));
+
+        // Example: agent stats panel at the top
+        JPanel statsPanel = buildStatsPanel();
+        centerPanel.add(statsPanel, BorderLayout.NORTH);
+
+        // Example: ticket list in the center
+        JPanel ticketPanel = buildTicketPanel();
+        centerPanel.add(ticketPanel, BorderLayout.CENTER);
+    }
+
+    private JPanel buildStatsPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 3, 10, 0));
+        panel.setBackground(new Color(34, 40, 44));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panel.add(buildStatCard("Open tickets", "12"));
+        panel.add(buildStatCard("Resolved today", "5"));
+        panel.add(buildStatCard("Assigned to me", "3"));
+
+        return panel;
+    }
+
+    private JPanel buildStatCard(String title, String value) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(new Color(21, 25, 28));
+        card.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        card.setPreferredSize(new Dimension(0, 80));
+
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setForeground(new Color(180, 180, 180));
+
+        JLabel valueLabel = new JLabel(value);
+        valueLabel.setForeground(Color.WHITE);
+        valueLabel.setFont(valueLabel.getFont().deriveFont(28f));
+
+        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(valueLabel, BorderLayout.CENTER);
+        return card;
+    }
+
+    private JPanel buildTicketPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(21, 25, 28));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel placeholder = new JLabel("....");
+        placeholder.setForeground(new Color(120, 120, 120));
+        panel.add(placeholder);
+
+        return panel;
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -4,34 +4,33 @@
  */
 package com.ticketmaster.ticketplusclient.gui;
 
-import com.ticketmaster.ticketplusclient.api.AuthAPI;
-import com.ticketmaster.ticketplusclient.api.ClientAPI;
-import com.ticketmaster.ticketplusclient.model.LoginRequest;
 import com.ticketmaster.ticketplusclient.model.LoginResponse;
+import com.ticketmaster.ticketplusclient.session.AuthService;
 import java.awt.Color;
-import org.springframework.stereotype.Component;
-import java.io.IOException;
+import java.awt.Cursor;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  *
  * @author Christian / Erik
  */
-@Component
 public class LoginGUI extends javax.swing.JFrame {
 
-    private DashboardBaseGUI dashborad;
+    private DashboardBaseGUI dashboard;
+    
+    private final AuthService authService;
 
     /**
      * Creates new form LoginGUI
      */
     public LoginGUI() {
+        this.authService = new AuthService();
         initComponents();
+        setLocationRelativeTo(null);
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -221,53 +220,60 @@ public class LoginGUI extends javax.swing.JFrame {
         String password = new String(PasswordTextField.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
-            UIManager.put("OptionPane.background", new Color(30, 40, 44));
-            UIManager.put("Panel.background", new Color(30, 40, 44));
-            UIManager.put("OptionPane.messageForeground", Color.WHITE);
-            JOptionPane.showMessageDialog(null, "Usuario y contraseña no pueden estar vacíos");
-        } else {
-            AuthAPI api = ClientAPI.getAuthAPI();
-
-            LoginRequest request = new LoginRequest(username, password);
-            Call<LoginResponse> call = api.login(request);
-
-            try {
-                Response<LoginResponse> response = call.execute();
-
-                if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
-
-                    if (loginResponse.isSuccess()) {
-                        dashborad = new DashboardBaseGUI();
-                        dashborad.setVisible(true);
-                        this.dispose();
-                    } else {
-                        UIManager.put("OptionPane.background", new Color(30, 40, 44));
-                        UIManager.put("Panel.background", new Color(30, 40, 44));
-                        UIManager.put("OptionPane.messageForeground", Color.WHITE);
-                        JOptionPane.showMessageDialog(this, loginResponse.getMessage());
-                    }
-
-                } else {
-                    UIManager.put("OptionPane.background", new Color(30, 40, 44));
-                    UIManager.put("Panel.background", new Color(30, 40, 44));
-                    UIManager.put("OptionPane.messageForeground", Color.WHITE);
-                    JOptionPane.showMessageDialog(this,
-                            "Error del servidor. Código HTTP: " + response.code());
-                }
-
-            } catch (IOException ex) {
-                UIManager.put("OptionPane.background", new Color(30, 40, 44));
-                UIManager.put("Panel.background", new Color(30, 40, 44));
-                UIManager.put("OptionPane.messageForeground", Color.WHITE);
-                JOptionPane.showMessageDialog(this,
-                        "No se pudo conectar con el servidor: " + ex.getMessage());
+            showDialog("Usuario y contraseña no pueden estar vacíos");
+            return;
+        } 
+        
+        LoginButton.setEnabled(false);
+        LoginButton.setText("Conectando...");
+        LoginButton.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        authService.login(username, password, new AuthService.AuthCallback(){
+            
+            @Override
+            public void onSuccess(LoginResponse response){
+                openDashboard(response.getRole());
             }
-
-        }
-
+            
+            @Override
+            public void onError(String errorMessage){
+                restoreLoginButton();
+                showDialog(errorMessage);
+                
+            }   
+            
+        });
     }//GEN-LAST:event_LoginButtonActionPerformed
 
+    private void openDashboard(String role){
+        
+        switch(role.toUpperCase()){
+            case "ADMIN":
+                dashboard = new DashboardAgentGUI();
+                break;
+            case "USER":
+                
+            default:
+                dashboard = new DashboardBaseGUI();
+                break;
+        }
+
+        dashboard.setVisible(true);
+        this.dispose();
+    }
+    
+    private void showDialog(String message){
+        UIManager.put("OptionPane.background", new Color(30, 40, 44));
+                    UIManager.put("Panel.background", new Color(30, 40, 44));
+                    UIManager.put("OptionPane.messageForeground", Color.WHITE);
+                    JOptionPane.showMessageDialog(this, message);
+    }
+    
+    private void restoreLoginButton(){
+        LoginButton.setEnabled(true);
+        LoginButton.setText("Login");
+        LoginButton.setCursor(Cursor.getDefaultCursor());
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel CentralPanelLogin;

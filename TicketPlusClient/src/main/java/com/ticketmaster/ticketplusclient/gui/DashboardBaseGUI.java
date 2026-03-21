@@ -4,9 +4,15 @@
  */
 package com.ticketmaster.ticketplusclient.gui;
 
-import org.springframework.stereotype.Component;
+import com.ticketmaster.ticketplusclient.session.AuthService;
+import com.ticketmaster.ticketplusclient.session.SessionManager;
+import java.awt.BorderLayout;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -17,43 +23,25 @@ import javax.swing.plaf.basic.BasicButtonUI;
  *
  * @author Christian
  */
-@Component
 public class DashboardBaseGUI extends javax.swing.JFrame {
 
+    
+    private final AuthService authService;
+    
     /**
      * Creates new form inicio
      */
     public DashboardBaseGUI() {
+        
+        this.authService = new AuthService();
+        
         initComponents();
-        JButton[] btns = {jButton1, jButton2, jButton3, jButton4, jButton5, jButton6};
-        for (JButton btn : btns) {
-            btn.setBackground(new Color(21, 25, 28));
-            btn.setUI(new BasicButtonUI());
-            btn.addMouseListener(new MouseListener() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                }
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    btn.setBackground(new Color(54, 81, 207));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    btn.setBackground(new Color(21, 25, 28));
-                }
-
-            });
-        }
+        setupSidebarButtons();
+        sessionInfo();
+        setupRoleDashboard();
+        pack();
+        setLocationRelativeTo(null);
+        setMinimumSize(new Dimension(800, 500));
     }
 
     /**
@@ -68,17 +56,17 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         pnlRoot = new javax.swing.JPanel();
         pnlSide = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
+        jButtonHome = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        Home = new javax.swing.JButton();
+        jButtonLogout = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         pnlCTop = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelWelcomeUser = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         pnlCCenter = new javax.swing.JPanel();
         pnlCBottom = new javax.swing.JPanel();
@@ -94,16 +82,16 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         jPanel2.setPreferredSize(new java.awt.Dimension(50, 150));
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 40));
 
-        jButton6.setBackground(new java.awt.Color(34, 40, 44));
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setFocusPainted(false);
-        jButton6.setPreferredSize(new java.awt.Dimension(40, 40));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        jButtonHome.setBackground(new java.awt.Color(34, 40, 44));
+        jButtonHome.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonHome.setFocusPainted(false);
+        jButtonHome.setPreferredSize(new java.awt.Dimension(40, 40));
+        jButtonHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                jButtonHomeActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton6);
+        jPanel2.add(jButtonHome);
 
         pnlSide.add(jPanel2);
 
@@ -161,18 +149,17 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         jPanel3.setPreferredSize(new java.awt.Dimension(50, 150));
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 40));
 
-        Home.setBackground(new java.awt.Color(34, 40, 44));
-        Home.setForeground(new java.awt.Color(255, 255, 255));
-        Home.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Home_1.png"))); // NOI18N
-        Home.setFocusPainted(false);
-        Home.setPreferredSize(new java.awt.Dimension(40, 40));
-        Home.addActionListener(new java.awt.event.ActionListener() {
+        jButtonLogout.setBackground(new java.awt.Color(34, 40, 44));
+        jButtonLogout.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonLogout.setFocusPainted(false);
+        jButtonLogout.setPreferredSize(new java.awt.Dimension(40, 40));
+        jButtonLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                HomeActionPerformed(evt);
+                jButtonLogoutActionPerformed(evt);
             }
         });
-        jPanel3.add(Home);
-        Home.getAccessibleContext().setAccessibleDescription("");
+        jPanel3.add(jButtonLogout);
+        jButtonLogout.getAccessibleContext().setAccessibleDescription("");
 
         pnlSide.add(jPanel3);
 
@@ -185,9 +172,8 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         pnlCTop.setBackground(new java.awt.Color(34, 40, 44));
         pnlCTop.setPreferredSize(new java.awt.Dimension(0, 100));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Light", 0, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Overview");
+        jLabelWelcomeUser.setFont(new java.awt.Font("Segoe UI Light", 0, 24)); // NOI18N
+        jLabelWelcomeUser.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI Light", 0, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -201,17 +187,17 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
                 .addGap(49, 49, 49)
                 .addGroup(pnlCTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabelWelcomeUser))
                 .addContainerGap(658, Short.MAX_VALUE))
         );
         pnlCTopLayout.setVerticalGroup(
             pnlCTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCTopLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addComponent(jLabel3)
+                .addComponent(jLabelWelcomeUser)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pnlCenter.add(pnlCTop, java.awt.BorderLayout.NORTH);
@@ -274,32 +260,111 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void jButtonHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHomeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_jButtonHomeActionPerformed
 
-    private void HomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeActionPerformed
-        // TODO add your handling code here:
-        //Pendiente hacer el logout en Server
+    private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
+        doLogout();
+        
+    }//GEN-LAST:event_jButtonLogoutActionPerformed
+
+    private void setupSidebarButtons(){
+        
+        pnlSide.removeAll();
+        pnlSide.setLayout(new BorderLayout());
+        
+        jPanel2.setLayout(new GridBagLayout());
+        jPanel2.setPreferredSize(new Dimension(80, 80));
+        pnlSide.add(jPanel2, BorderLayout.NORTH);
+        
+        JPanel pnlMiddle = new JPanel();
+        pnlMiddle.setBackground(new Color(21, 25, 28));
+        pnlMiddle.setLayout(new BoxLayout(pnlMiddle, BoxLayout.Y_AXIS));
+        
+        pnlMiddle.add(Box.createVerticalGlue());
+        JButton[] navButtons = {jButton1, jButton2, jButton3, jButton4, jButton5};
+        for(JButton button : navButtons){
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setMaximumSize(new Dimension(40, 40));
+            pnlMiddle.add(button);
+            pnlMiddle.add(Box.createRigidArea(new Dimension(0, 8)));
+        }
+        pnlMiddle.add(Box.createVerticalGlue());
+        pnlSide.add(pnlMiddle, BorderLayout.CENTER);
+        
+        jPanel3.setLayout(new GridBagLayout());
+        jPanel3.setPreferredSize(new Dimension(80,80));
+        jPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,15,0));
+        pnlSide.add(jPanel3, BorderLayout.SOUTH);
+
+        for (JButton button : navButtons) {
+            button.setBackground(new Color(21, 25, 28));
+            button.setUI(new BasicButtonUI());
+            button.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setBackground(new Color(54, 81, 207));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setBackground(new Color(21, 25, 28));
+                }
+
+            });
+        }
+    }
+    
+    private void sessionInfo(){
+        SessionManager session = SessionManager.getInstance();
+        if(session.isLoggedIn()){
+            String username = session.getUsername();
+            jLabelWelcomeUser.setText("Welcome "+username);
+        }
+    }
+    
+    private void doLogout(){
+        jButtonLogout.setEnabled(false);
+        jButtonLogout.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        authService.logout(() ->{
         LoginGUI login = new LoginGUI();
         login.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_HomeActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-
+        });
+    }
+    
+    protected JPanel getCenterPanel(){
+        return pnlCCenter;
+    }
+    
+    protected void setupRoleDashboard(){
+        
+    }
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Home;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButtonHome;
+    private javax.swing.JButton jButtonLogout;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabelWelcomeUser;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel pnlCBottom;
