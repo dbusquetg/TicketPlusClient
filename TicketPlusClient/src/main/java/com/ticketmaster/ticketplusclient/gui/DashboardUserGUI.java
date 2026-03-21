@@ -16,9 +16,9 @@ import javax.swing.*;
  *
  * @author Christian
  */
-public class DashboardAgentGUI extends DashboardBaseGUI {
+public class DashboardUserGUI extends DashboardBaseGUI {
 
-    public DashboardAgentGUI(){
+    public DashboardUserGUI(){
         super();
     }
 
@@ -30,8 +30,6 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -52,9 +50,9 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
         panel.setBackground(new Color(34, 40, 44));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        panel.add(buildStatCard("Open tickets", "12"));
-        panel.add(buildStatCard("Resolved today", "5"));
-        panel.add(buildStatCard("Assigned to me", "3"));
+        panel.add(buildStatCard("Open tickets", "1"));
+        panel.add(buildStatCard("Awaitin Reply", "2"));
+        panel.add(buildStatCard("Closed", "3"));
 
         return panel;
     }

@@ -252,7 +252,8 @@ public class LoginGUI extends javax.swing.JFrame {
                 dashboard = new DashboardAgentGUI();
                 break;
             case "USER":
-                
+                dashboard = new DashboardUserGUI();
+                break;
             default:
                 dashboard = new DashboardBaseGUI();
                 break;
