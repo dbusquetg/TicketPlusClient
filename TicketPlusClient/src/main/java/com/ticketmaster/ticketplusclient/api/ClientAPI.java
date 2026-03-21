@@ -49,7 +49,7 @@ public class ClientAPI {
                         
                         if(token != null){
                             request = original.newBuilder()
-                                    .header("Autorization","Bearer " + token)
+                                    .header("Authorization","Bearer " + token)
                                     .header("Accept", "application/json")
                                     .header("Content-Type", "application/json")
                                     .method(original.method(), original.body())
