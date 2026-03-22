@@ -44,6 +44,10 @@ public class AuthService {
         this.authApi = ClientAPI.createService(AuthAPI.class);
     }
     
+    AuthService(AuthAPI authApi) {
+        this.authApi = authApi;
+    }
+    
     /**
      * Envía las credenciales de usuario al servidor de forma asíncrona y
      * notifica el resultado mediante el callback proporcionado.

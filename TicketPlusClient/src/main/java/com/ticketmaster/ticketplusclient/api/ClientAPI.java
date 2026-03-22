@@ -32,7 +32,7 @@ public class ClientAPI {
     /**
      * URL base del backend
      */
-    private static final String BASE_URL = "http://10.2.99.25:8080/";
+    private static final String BASE_URL = System.getProperty("ticketplus.base.url", "http://10.2.99.25:8080/");
     
     
     /**
