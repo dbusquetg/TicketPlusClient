@@ -13,17 +13,42 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
+ * Ventana de inicio de sesión de la aplicación de escritorio TicketPlus.
+ *
+ * <p>Es la primera ventana que ve el usuario al arrancar la aplicación.
+ * Recoge las credenciales (nombre de usuario y contraseña), las valida
+ * localmente (campos no vacíos) y las envía al servidor a través de
+ * {@link AuthService#login(String, String, AuthService.AuthCallback)}.</p>
+ *
+ * <p>Según el rol retornado por el servidor, redirige al dashboard
+ * correspondiente mediante {@link #openDashboard(String)}:
+ * <ul>
+ *   <li>{@code ADMIN} → {@link DashboardAgentGUI}</li>
+ *   <li>{@code USER}  → {@link DashboardUserGUI}</li>
+ *   <li>otros roles   → {@link DashboardBaseGUI} (pantalla base)</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Durante la espera de respuesta del servidor, el botón de login se
+ * deshabilita y muestra un cursor de espera para mejorar la experiencia
+ * de usuario. Se restaura automáticamente en caso de error.</p>
  *
  * @author Christian / Erik
+ * @see AuthService
+ * @see DashboardAgentGUI
+ * @see DashboardUserGUI
  */
 public class LoginGUI extends javax.swing.JFrame {
 
+    /** Referencia al dashboard que se abrirá tras un login exitoso. */
     private DashboardBaseGUI dashboard;
     
+    /** Servicio de autenticación que gestiona la comunicación con el servidor. */
     private final AuthService authService;
 
     /**
-     * Creates new form LoginGUI
+     * Crea e inicializa la ventana de login, configurando el servicio de
+     * autenticación y centrando la ventana en pantalla.
      */
     public LoginGUI() {
         this.authService = new AuthService();
@@ -213,7 +238,17 @@ public class LoginGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_RememberMeCheckBoxActionPerformed
 
-
+    /**
+     * Manejador del evento de click sobre el botón de login.
+     *
+     * <p>Valida que los campos no estén vacíos, deshabilita el botón durante
+     * la petición de red y delega la autenticación en
+     * {@link AuthService#login(String, String, AuthService.AuthCallback)}.
+     * Según el resultado, llama a {@link #openDashboard(String)} o a
+     * {@link #showDialog(String)} con el mensaje de error.</p>
+     *
+     * @param evt evento de acción generado por el botón de login
+     */
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
 
         String username = UserTextField.getText();
@@ -245,6 +280,21 @@ public class LoginGUI extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_LoginButtonActionPerformed
 
+    /**
+     * Abre el dashboard correspondiente al rol del usuario autenticado y
+     * cierra la ventana de login.
+     *
+     * <p>Utiliza un switch sobre el rol (en mayúsculas) para instanciar el
+     * dashboard adecuado:
+     * <ul>
+     *   <li>{@code ADMIN} → {@link DashboardAgentGUI}</li>
+     *   <li>{@code USER}  → {@link DashboardUserGUI}</li>
+     *   <li>otros         → {@link DashboardBaseGUI}</li>
+     * </ul>
+     * </p>
+     *
+     * @param role rol del usuario recibido en la respuesta de login del servidor
+     */
     private void openDashboard(String role){
         
         switch(role.toUpperCase()){
@@ -263,6 +313,11 @@ public class LoginGUI extends javax.swing.JFrame {
         this.dispose();
     }
     
+    /**
+     * Muestra un diálogo modal de error.
+     *
+     * @param message mensaje a mostrar al usuario en el diálogo
+     */
     private void showDialog(String message){
         UIManager.put("OptionPane.background", new Color(30, 40, 44));
                     UIManager.put("Panel.background", new Color(30, 40, 44));
@@ -270,6 +325,10 @@ public class LoginGUI extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, message);
     }
     
+    /**
+     * Restaura el botón de login a su estado original (habilitado, texto "Login"
+     * y cursor por defecto) tras un intento de login fallido.
+     */
     private void restoreLoginButton(){
         LoginButton.setEnabled(true);
         LoginButton.setText("Login");

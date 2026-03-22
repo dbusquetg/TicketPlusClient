@@ -13,11 +13,26 @@ import java.awt.GridLayout;
 import javax.swing.*;
 
 /**
+ * Panel de control específico para usuarios con rol estándar (USER) en TicketPlus.
+ *
+ * <p>Extiende {@link DashboardBaseGUI} e implementa el método
+ * {@link #setupRoleDashboard()} del patrón Template Method para personalizar
+ * el área central del dashboard con información relevante para un usuario final:
+ * tarjetas con el estado de sus tickets y un panel de detalle.</p>
+ *
+ * <p>Los datos mostrados son de momento estáticos (simulados); se conectarán
+ * con el servidor en sprints posteriores a través de
+ * {@link com.ticketmaster.ticketplusclient.api.DataAPI}.</p>
  *
  * @author Erik
+ * @see DashboardBaseGUI
  */
 public class DashboardUserGUI extends DashboardBaseGUI {
 
+    /**
+     * Crea una nueva instancia del dashboard de usuario, delegando la
+     * inicialización base a {@link DashboardBaseGUI#DashboardBaseGUI()}.
+     */
     public DashboardUserGUI(){
         super();
     }
@@ -34,6 +49,13 @@ public class DashboardUserGUI extends DashboardBaseGUI {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Configura el contenido específico del dashboard para el rol de Usuario.
+     *
+     * <p>Añade al panel central un panel de estadísticas en la zona norte
+     * (con tarjetas de tickets abiertos, en espera de respuesta y cerrados) y
+     * un panel de detalle de tickets en la zona central.</p>
+     */
     protected void setupRoleDashboard() {
         JPanel centerPanel = getCenterPanel();
         centerPanel.setLayout(new BorderLayout(10, 10));
@@ -45,6 +67,12 @@ public class DashboardUserGUI extends DashboardBaseGUI {
         centerPanel.add(ticketPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Construye el panel de estadísticas del usuario con tres tarjetas:
+     * tickets abiertos, en espera de respuesta y cerrados.
+     *
+     * @return panel {@link JPanel} con el layout de estadísticas en cuadrícula
+     */
     private JPanel buildStatsPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 3, 10, 0));
         panel.setBackground(new Color(34, 40, 44));
@@ -57,6 +85,13 @@ public class DashboardUserGUI extends DashboardBaseGUI {
         return panel;
     }
 
+    /**
+     * Crea una tarjeta de estadística individual con título y valor numérico.
+     *
+     * @param title etiqueta descriptiva de la estadística
+     * @param value valor numérico a mostrar en la tarjeta
+     * @return panel {@link JPanel} con la tarjeta de estadística maquetada
+     */
     private JPanel buildStatCard(String title, String value) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(new Color(21, 25, 28));
@@ -75,6 +110,13 @@ public class DashboardUserGUI extends DashboardBaseGUI {
         return card;
     }
 
+    /**
+     * Construye el panel principal de tickets del usuario.
+     * Actualmente muestra un marcador de posición; se completará en sprints
+     * posteriores con la lista de tickets del usuario autenticado.
+     *
+     * @return panel {@link JPanel} del área de tickets (placeholder)
+     */
     private JPanel buildTicketPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(21, 25, 28));
@@ -86,10 +128,6 @@ public class DashboardUserGUI extends DashboardBaseGUI {
 
         return panel;
     }
-    
-    /**
-     * @param args the command line arguments
-     */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

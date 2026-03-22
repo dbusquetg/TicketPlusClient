@@ -20,16 +20,34 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
+ * Ventana base del panel de control (dashboard) de la aplicación TicketPlus.
+ *
+ * <p>Implementa el patrón <b>Template Method</b>: define la estructura común del
+ * dashboard (barra lateral de navegación, cabecera con bienvenida y botón de logout,
+ * panel central) y declara el método {@link #setupRoleDashboard()} como punto de
+ * extensión para que las subclases ({@link DashboardAgentGUI} y {@link DashboardUserGUI})
+ * personalicen el contenido del área central según el rol del usuario.</p>
+ *
+ * <p>Tras un logout, reinicia el cliente Retrofit mediante
+ * {@link com.ticketmaster.ticketplusclient.api.ClientAPI#reset()} y abre de nuevo
+ * la ventana de {@link LoginGUI}.</p>
  *
  * @author Christian
+ * @see DashboardAgentGUI
+ * @see DashboardUserGUI
+ * @see AuthService
+ * @see SessionManager
  */
 public class DashboardBaseGUI extends javax.swing.JFrame {
 
-    
+    /** Servicio de autenticación utilizado para gestionar el logout. */
     private final AuthService authService;
     
     /**
-     * Creates new form inicio
+     * Crea una nueva instancia del dashboard base, inicializando el servicio de
+     * autenticación, los componentes gráficos, la barra lateral, la información
+     * de sesión y delegando la configuración específica de rol al método
+     * {@link #setupRoleDashboard()}.
      */
     public DashboardBaseGUI() {
         
@@ -269,6 +287,11 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButtonLogoutActionPerformed
 
+    /**
+     * Configura el layout y el comportamiento visual de los botones de la barra
+     * lateral de navegación, incluyendo el efecto hover (cambio de color al
+     * pasar el ratón) mediante un {@link MouseListener} anónimo.
+     */
     private void setupSidebarButtons(){
         
         pnlSide.removeAll();
@@ -328,6 +351,10 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Actualiza la etiqueta de bienvenida de la cabecera con el nombre del usuario
+     * de la sesión activa obtenido de {@link SessionManager}.
+     */
     private void sessionInfo(){
         SessionManager session = SessionManager.getInstance();
         if(session.isLoggedIn()){
@@ -336,6 +363,11 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Inicia el proceso de logout: deshabilita el botón para evitar pulsaciones
+     * múltiples, llama a {@link AuthService#logout(Runnable)} de forma asíncrona
+     * y, al completar, abre la ventana de {@link LoginGUI} y cierra el dashboard.
+     */
     private void doLogout(){
         jButtonLogout.setEnabled(false);
         jButtonLogout.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -347,10 +379,23 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         });
     }
     
+    /**
+     * Devuelve el panel central del dashboard donde las subclases deben añadir
+     * su contenido específico de rol.
+     *
+     * @return el {@link JPanel} central ({@code pnlCCenter}) del dashboard
+     */
     protected JPanel getCenterPanel(){
         return pnlCCenter;
     }
     
+    /**
+     * Método de extensión (patrón Template Method) que las subclases deben
+     * sobrescribir para añadir el contenido específico de cada rol de usuario
+     * al panel central del dashboard.
+     *
+     * <p>La implementación base no realiza ninguna acción.</p>
+     */
     protected void setupRoleDashboard(){
         
     }
