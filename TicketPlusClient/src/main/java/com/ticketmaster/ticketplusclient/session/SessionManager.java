@@ -6,7 +6,7 @@ package com.ticketmaster.ticketplusclient.session;
 
 /**
  *
- * @author Christian
+ * @author Erik
  */
 public class SessionManager {
     

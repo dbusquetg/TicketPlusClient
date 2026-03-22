@@ -14,7 +14,7 @@ import javax.swing.*;
 
 /**
  *
- * @author Christian
+ * @author Erik
  */
 public class DashboardUserGUI extends DashboardBaseGUI {
 
