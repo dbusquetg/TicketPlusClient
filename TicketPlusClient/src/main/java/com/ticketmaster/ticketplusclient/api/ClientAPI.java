@@ -45,7 +45,7 @@ public class ClientAPI {
      * Devuelve la instancia singleton de {@link Retrofit} configurada con el
      * interceptor de autenticación y el conversor Gson.
      *
-     * <p>En caso de que la instancia no exista aún (primer acceso o tras llamar
+     * En caso de que la instancia no exista aún (primer acceso o tras llamar
      * a {@link #reset()}), crea un nuevo cliente OkHttp con los siguientes
      * interceptores:
      * <ul>
@@ -56,7 +56,7 @@ public class ClientAPI {
      *   <li><b>HttpLoggingInterceptor:</b> registra el tráfico HTTP en consola
      *       para facilitar la depuración.</li>
      * </ul>
-     * </p>
+     * 
      *
      * @return la instancia singleton de {@link Retrofit} lista para ser usada
      */

@@ -20,14 +20,13 @@ import javax.swing.UIManager;
  * localmente (campos no vacíos) y las envía al servidor a través de
  * {@link AuthService#login(String, String, AuthService.AuthCallback)}.</p>
  *
- * <p>Según el rol retornado por el servidor, redirige al dashboard
+ * Según el rol retornado por el servidor, redirige al dashboard
  * correspondiente mediante {@link #openDashboard(String)}:
  * <ul>
  *   <li>{@code ADMIN} → {@link DashboardAgentGUI}</li>
  *   <li>{@code USER}  → {@link DashboardUserGUI}</li>
  *   <li>otros roles   → {@link DashboardBaseGUI} (pantalla base)</li>
  * </ul>
- * </p>
  *
  * <p>Durante la espera de respuesta del servidor, el botón de login se
  * deshabilita y muestra un cursor de espera para mejorar la experiencia

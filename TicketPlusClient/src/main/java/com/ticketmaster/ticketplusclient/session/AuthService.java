@@ -53,13 +53,13 @@ public class AuthService {
      * En caso de respuesta de error o fallo de conexión, invoca
      * {@link AuthCallback#onError(String)} con un mensaje descriptivo.</p>
      *
-     * <p>Códigos de error HTTP gestionados:
+     * Códigos de error HTTP gestionados:
      * <ul>
      *   <li>401: credenciales incorrectas</li>
      *   <li>403: cuenta desactivada</li>
      *   <li>500: error interno del servidor</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param username nombre de usuario a autenticar
      * @param password contraseña del usuario
