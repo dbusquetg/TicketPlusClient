@@ -1,0 +1,14 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package com.ticketmaster.ticketplusclient.api;
+
+/**
+ *
+ * @author Christian
+ */
+// TODO: API para le interaccion con otros endpoints del servicio TicketPlus
+public interface DataAPI {
+    //Implementar en fases posteriores
+}
