@@ -4,7 +4,9 @@
  */
 package com.ticketmaster.ticketplusclient.gui;
 
+import com.ticketmaster.ticketplusclient.model.TicketDTO;
 import com.ticketmaster.ticketplusclient.session.SessionManager;
+import com.ticketmaster.ticketplusclient.session.TicketService;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -82,6 +84,8 @@ public class TicketListPanel extends JPanel{
     private JButton prevBtn;
     private JButton nextBtn;
     
+    private final TicketService ticketService = new TicketService();
+    
     /**
      * Crea el panel de lista de Tickets.
      * 
@@ -90,7 +94,7 @@ public class TicketListPanel extends JPanel{
         setLayout(new BorderLayout(0,0));
         setBackground(BG_MID);
         
-        loadSampleData();//Modificar con datos reales
+        loadTicketsFromServer();
         
         add(buildTopSection(), BorderLayout.NORTH);
         add(buildTicketSection(), BorderLayout.CENTER);
@@ -766,6 +770,7 @@ public class TicketListPanel extends JPanel{
      *
      * <p><b>TODO:</b> sustituir por llamada al servicio REST correspondiente.</p>
      */
+    /*
     private void loadSampleData() {
         allTickets.add(new TicketRow("INC-1001", "Mi PC no enciende",
                 "Desde ayer mi ordenador no quiere arrancar...",           "HIGH",   "Opened",      "Maria",   "Erik"));
@@ -785,6 +790,34 @@ public class TicketListPanel extends JPanel{
                 "SAP muestra error de licencia al iniciar...",             "HIGH",   "Opened",      "Miguel",  "Erik"));
         allTickets.add(new TicketRow("INC-1009", "Pantalla azul",
                 "El equipo muestra BSOD al iniciar...",                    "HIGH",   "Solved",      "Rosa",    "David"));
+    }*/
+    
+    private void loadTicketsFromServer(){
+        ticketService.getTickets(new TicketService.TicketCallback<List<TicketDTO>>() {
+            @Override
+            public void onSuccess(List<TicketDTO> tickets){
+                allTickets.clear();
+                for(TicketDTO dto: tickets){
+                    allTickets.add(new TicketRow(
+                            dto.getId(),
+                            dto.getRef(),
+                            dto.getTitle(),
+                            dto.getDescription(),
+                            dto.getPriority(),
+                            dto.getStatus(),
+                            dto.getCreatedBy(),
+                            dto.getAgent() != null ? dto.getAgent() : "Sin asignar"
+                            
+                    ));
+                }
+                applyFilter("ALL");
+            }
+            @Override
+            public void onError(String errorMessage){
+                JOptionPane.showMessageDialog(TicketListPanel.this, errorMessage,
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     // -------------------------------------------------------------------------
@@ -868,6 +901,8 @@ public class TicketListPanel extends JPanel{
      * desde los renderizadores de fila sin necesidad de getters.</p>
      */
     public static class TicketRow {
+        
+        public final Long id;
 
         /** Referencia única del ticket. */
         public final String ref;
@@ -893,6 +928,7 @@ public class TicketListPanel extends JPanel{
         /**
          * Crea un nuevo registro de ticket con todos sus campos.
          *
+         * @param id
          * @param ref referencia única
          * @param title título del ticket
          * @param description descripción breve
@@ -901,16 +937,17 @@ public class TicketListPanel extends JPanel{
          * @param createdBy usuario que lo abrió
          * @param agent agente asignado
          */
-        public TicketRow(String ref, String title, String description,
+        public TicketRow(Long id, String ref, String title, String description,
                          String priority, String status,
                          String createdBy, String agent) {
-            this.ref         = ref;
-            this.title       = title;
+            this.id = id;
+            this.ref = ref;
+            this.title = title;
             this.description = description;
-            this.priority    = priority;
-            this.status      = status;
-            this.createdBy   = createdBy;
-            this.agent       = agent;
+            this.priority = priority;
+            this.status = status;
+            this.createdBy = createdBy;
+            this.agent = agent;
         }
     }
     
