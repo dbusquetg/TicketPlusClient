@@ -59,12 +59,7 @@ public class DashboardUserGUI extends DashboardBaseGUI {
     protected void setupRoleDashboard() {
         JPanel centerPanel = getCenterPanel();
         centerPanel.setLayout(new BorderLayout(10, 10));
-
-        JPanel statsPanel = buildStatsPanel();
-        centerPanel.add(statsPanel, BorderLayout.NORTH);
-
-        JPanel ticketPanel = buildTicketPanel();
-        centerPanel.add(ticketPanel, BorderLayout.CENTER);
+        centerPanel.add(new TicketListPanel(centerPanel), BorderLayout.CENTER);
     }
 
     /**

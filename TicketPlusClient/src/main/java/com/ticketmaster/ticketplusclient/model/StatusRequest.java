@@ -5,11 +5,32 @@
 package com.ticketmaster.ticketplusclient.model;
 
 /**
+ * DTO de peticion para cambiar el estado de un ticket.
  *
  * @author Christian G
  */
 public class StatusRequest {
+    
+    /**
+     * Nuevo estado del ticket.
+     * Valores: Opened, In Progress, Pending, Solved, Closed.
+     */
     private String status;
-    public StatusRequest(String status) { this.status = status; }
-    public String getStatus() { return status; }
+    
+    /**
+     * Crea peticion de cambio de estado
+     * 
+     * @param status  nuevo estado del ticket
+     */
+    public StatusRequest(String status) { 
+        this.status = status; 
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
+    public String getStatus() { 
+        return status; 
+    }
 }

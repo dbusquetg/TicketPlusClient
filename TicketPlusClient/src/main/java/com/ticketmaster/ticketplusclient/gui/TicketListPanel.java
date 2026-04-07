@@ -70,6 +70,7 @@ public class TicketListPanel extends JPanel{
     private static final int ANIM_STEP = 8;   
     private static final int ANIM_DELAY_MS = 12;  
     
+    private final JPanel parentPanel;
     private final List<TicketRow> allTickets = new ArrayList<>();
     private List<TicketRow> filtered = new ArrayList<>();
     private String activeFilter = "All";
@@ -90,7 +91,8 @@ public class TicketListPanel extends JPanel{
      * Crea el panel de lista de Tickets.
      * 
      */
-    public TicketListPanel(){
+    public TicketListPanel(JPanel parentPanel){
+        this.parentPanel = parentPanel;
         setLayout(new BorderLayout(0,0));
         setBackground(BG_MID);
         
@@ -285,8 +287,29 @@ public class TicketListPanel extends JPanel{
         newBtn.setBorder(BorderFactory.createEmptyBorder(6,18,6,18));
         newBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newBtn.addMouseListener(hoverEffect(newBtn, ACCENT_BLUE, ACCENT_BLUE.darker()));
-        newBtn.addActionListener(e ->
-        JOptionPane.showMessageDialog(this, "Formulario de nuevo ticket proximamente."));
+        newBtn.addActionListener(e ->{
+            parentPanel.removeAll();
+            parentPanel.setLayout(new BorderLayout());
+            parentPanel.add(
+                new NewTicketPanel(
+                    () -> {
+                        parentPanel.removeAll();
+                        parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
+                        parentPanel.revalidate();
+                        parentPanel.repaint();
+                    },
+                    () -> {
+                        parentPanel.removeAll();
+                        parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
+                        parentPanel.revalidate();
+                        parentPanel.repaint();
+                    }
+                ),
+                BorderLayout.CENTER
+            );
+            parentPanel.revalidate();
+            parentPanel.repaint();
+        });
         
         bar.add(newBtn, BorderLayout.WEST);
         bar.add(buildFilterBar(), BorderLayout.EAST);
@@ -688,18 +711,53 @@ public class TicketListPanel extends JPanel{
 
         boolean isAdmin = SessionManager.getInstance().isAdmin();
 
-        addMenuItem(menu, "Ver detalles", () ->
-            JOptionPane.showMessageDialog(this, "Detalles — " + ticket.ref + " disponible en TEA3"));
-
+        addMenuItem(menu, "Ver detalles", () -> {
+                parentPanel.removeAll();
+                parentPanel.setLayout(new BorderLayout());
+                parentPanel.add(
+                        new TicketDetailPanel(
+                        ticket.id,
+                        () -> {
+                            parentPanel.removeAll();
+                                    parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
+                                    parentPanel.revalidate();
+                                    parentPanel.repaint();
+                        }
+                ),
+                BorderLayout.CENTER
+            );
+        parentPanel.revalidate();
+        parentPanel.repaint();
+        });
+        
+                
         if (isAdmin) {
             addMenuItem(menu, "Asignarme", () ->
-                JOptionPane.showMessageDialog(this, "Asignar — " + ticket.ref + " disponible en TEA3"));//Incluir llamada a ENDPOINT para asiginacion de ticket
-            addMenuItem(menu, "Cambiar estado", () ->
-                JOptionPane.showMessageDialog(this, "Estado — " + ticket.ref + " disponible en TEA3")); //Incluir llamada a ENDPOINT para asiginacion de ticket
-        }
+                ticketService.assignToMe(ticket.id, new TicketService.ServiceCallback<TicketDTO>() {
+                    public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
+                    public void onError(String e) { JOptionPane.showMessageDialog(null, e); }
+                }));
+                
+            addMenuItem(menu, "Cambiar estado", () -> {
+                String[] options = {"In Progress", "Pending", "Solved", "Closed"};
+                String chosen = (String) JOptionPane.showInputDialog(
+                    TicketListPanel.this, "Nuevoestado:", "Cambiar estado",
+                    JOptionPane.PLAIN_MESSAGE, null, options, ticket.status);
+                if(chosen != null)
+                    ticketService.changeStatus(ticket.id, chosen,
+                            new TicketService.ServiceCallback<TicketDTO>(){
+                                public void onSuccess(TicketDTO t){loadTicketsFromServer();}
+                                public void onError(String e){JOptionPane.showMessageDialog(null, e);}
+                                
+                            });
+            });
 
-        addMenuItem(menu, "Cerrar ticket", () ->
-            JOptionPane.showMessageDialog(this, "Cerrar — " + ticket.ref + " disponible en TEA3")); //Incluir llamada a ENDPOINT para asiginacion de ticket
+            addMenuItem(menu, "Cerrar ticket", () -> 
+            ticketService.closeTicket(ticket.id, new TicketService.ServiceCallback<TicketDTO>(){
+                public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
+                public void onError(String e)      { JOptionPane.showMessageDialog(null, e); }
+            }));
+        }    
 
         menu.show(source, 0, source.getHeight());
     }
@@ -793,7 +851,7 @@ public class TicketListPanel extends JPanel{
     }*/
     
     private void loadTicketsFromServer(){
-        ticketService.getTickets(new TicketService.TicketCallback<List<TicketDTO>>() {
+        ticketService.getTickets(new TicketService.ServiceCallback<List<TicketDTO>>() {
             @Override
             public void onSuccess(List<TicketDTO> tickets){
                 allTickets.clear();

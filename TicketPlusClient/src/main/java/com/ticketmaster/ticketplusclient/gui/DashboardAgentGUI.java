@@ -60,7 +60,7 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
     protected void setupRoleDashboard() {
         JPanel centerPanel = getCenterPanel();
         centerPanel.setLayout(new BorderLayout(10, 10));
-        centerPanel.add(new TicketListPanel(), BorderLayout.CENTER);
+        centerPanel.add(new TicketListPanel(centerPanel), BorderLayout.CENTER);
 
         /*JPanel statsPanel = buildStatsPanel();
         centerPanel.add(statsPanel, BorderLayout.NORTH);*/
