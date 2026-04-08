@@ -7,6 +7,7 @@ package com.ticketmaster.ticketplusclient.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -51,22 +52,110 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Configura el contenido específico del dashboard para el rol de Agente.
-     *
-     * <p>Añade al panel central un panel de estadísticas en la zona norte
-     * (con tarjetas de tickets abiertos, resueltos hoy y asignados) y un
-     * panel de gestión de tickets en la zona central.</p>
+     * Registra los paneles del agente y muestra el listado de tickets al arrancar.
+     * 
+     * <p>El link {@code Consumer<Long>} inyectado en {@link TicketListPanel} es
+     * {@link #showTicketDetail}, que recrea el panel de detalle con el ticket correcto 
+     * cada vez que se selecciona uno.</p>
      */
+    @Override
     protected void setupRoleDashboard() {
-        JPanel centerPanel = getCenterPanel();
-        centerPanel.setLayout(new BorderLayout(10, 10));
-        centerPanel.add(new TicketListPanel(centerPanel), BorderLayout.CENTER);
-
-        /*JPanel statsPanel = buildStatsPanel();
-        centerPanel.add(statsPanel, BorderLayout.NORTH);*/
-
-        /*JPanel ticketPanel = buildTicketPanel();
-        centerPanel.add(ticketPanel, BorderLayout.CENTER);*/
+        ticketListPanel = new TicketListPanel(
+            () -> {
+                newTicketPanel.reset();
+                showCenterPanel("newTicket");
+            },
+            this::showTicketDetail
+        );
+        
+        
+        newTicketPanel = new NewTicketPanel(
+            () -> {
+                ticketListPanel.refresh();
+                showCenterPanel("tickets");
+            },
+            () -> showCenterPanel("tickets")   
+        );
+        
+        addCenterPanel(
+                ticketListPanel,
+                "tickets"
+        );
+        
+        addCenterPanel(
+                newTicketPanel,
+                "newTicket"
+        );
+        showCenterPanel("tickets");
+    }
+    
+    /**
+     * Abre el panel de detalle para el ticket con el identificador indicado.
+     * 
+     * <p>Elimina el panel de detalle anterior si existia (Evita acumular paneles)</p>
+     * 
+     * @param ticketId 
+     */
+    private void showTicketDetail(Long ticketId){
+        for(Component c : getCenterPanel().getComponents()){
+            if(c instanceof TicketDetailPanel){
+                getCenterPanel().remove(c);
+                break;
+            }
+        }
+        addCenterPanel(
+                new TicketDetailPanel(ticketId, () -> showCenterPanel("tickets")),
+                "detail"
+        );
+        showCenterPanel("detail");
+    }
+    
+    /**
+     * Boton Home - Siempre vuelve al listado de tickets.
+     */
+    @Override
+    protected void onSidebarButtonHome(){
+        showCenterPanel("tickets");
+    }
+    
+    /**
+     * Boton 1 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton1(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 2 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton2(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 3 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton3(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 4 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton4(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 5 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton5(){
+        //Aplicar funcionalidad proximamente
     }
 
     /**

@@ -7,22 +7,27 @@ package com.ticketmaster.ticketplusclient.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.*;
 
 /**
- * Panel de control específico para usuarios con rol estándar (USER) en TicketPlus.
+ * Dashboard para usuarios con rol estándar (USER).
  *
- * <p>Extiende {@link DashboardBaseGUI} e implementa el método
- * {@link #setupRoleDashboard()} del patrón Template Method para personalizar
- * el área central del dashboard con información relevante para un usuario final:
- * tarjetas con el estado de sus tickets y un panel de detalle.</p>
+ * <p>El usuario únicamente ve sus propios tickets abiertos, en progreso
+ * o pendientes de respuesta. El listado es gestionado por
+ * {@link TicketListPanel}, que aplica el filtro de visibilidad según el
+ * rol obtenido de {@link com.ticketmaster.ticketplusclient.session.SessionManager}.</p>
  *
- * <p>Los datos mostrados son de momento estáticos (simulados); se conectarán
- * con el servidor en sprints posteriores a través de
- * {@link com.ticketmaster.ticketplusclient.api.DataAPI}.</p>
+ * <p>Vistas registradas:</p>
+ * <ul>
+ *   <li>{@code "tickets"} — listado de tickets propios ({@link TicketListPanel}).</li>
+ *   <li>{@code "newTicket"} — formulario de apertura de nueva incidencia ({@link NewTicketPanel}).</li>
+ *   <li>{@code "detail"} — detalle de ticket ({@link TicketDetailPanel}),
+ *       recreado dinámicamente en cada apertura.</li>
+ * </ul>
  *
  * @author Erik
  * @see DashboardBaseGUI
@@ -30,8 +35,9 @@ import javax.swing.*;
 public class DashboardUserGUI extends DashboardBaseGUI {
 
     /**
-     * Crea una nueva instancia del dashboard de usuario, delegando la
-     * inicialización base a {@link DashboardBaseGUI#DashboardBaseGUI()}.
+     * Crea el dashboard del usuario estándar.
+     * Delega la inicialización completa al constructor base,
+     * que invoca el hook {@link #setupRoleDashboard()}.
      */
     public DashboardUserGUI(){
         super();
@@ -50,16 +56,100 @@ public class DashboardUserGUI extends DashboardBaseGUI {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Configura el contenido específico del dashboard para el rol de Usuario.
+     * Registra los paneles del usuario y muestra el listado de tickets al arrancar.
      *
-     * <p>Añade al panel central un panel de estadísticas en la zona norte
-     * (con tarjetas de tickets abiertos, en espera de respuesta y cerrados) y
-     * un panel de detalle de tickets en la zona central.</p>
+     * <p>El {@code Consumer<Long>} inyectado en {@link TicketListPanel} es
+     * {@link #showTicketDetail}, que recrea el panel de detalle con el ticket
+     * correcto cada vez que se selecciona uno.</p>
      */
     protected void setupRoleDashboard() {
-        JPanel centerPanel = getCenterPanel();
-        centerPanel.setLayout(new BorderLayout(10, 10));
-        centerPanel.add(new TicketListPanel(centerPanel), BorderLayout.CENTER);
+        ticketListPanel = new TicketListPanel(
+                        () -> showCenterPanel("newTicket"),
+                        this::showTicketDetail
+        );
+        addCenterPanel(
+                ticketListPanel,
+                "tickets"
+        );
+        addCenterPanel(
+                new NewTicketPanel(
+                        () ->showCenterPanel("tickets"),
+                        () ->showCenterPanel("tickets")
+                ),
+                "newTicket"
+        );
+        showCenterPanel("tickets");
+    }
+    
+    /**
+     * Abre el panel de detalle para el ticket con el identificador indicado.
+     *
+     * <p>Elimina el panel de detalle anterior si existía, crea uno nuevo
+     * y lo muestra. El botón "Back" del detalle navega de vuelta a
+     * {@code "tickets"}.</p>
+     *
+     * @param ticketId identificador del ticket a mostrar
+     */
+    private void showTicketDetail(Long ticketId){
+        for(Component c : getCenterPanel().getComponents()){
+            if(c instanceof TicketDetailPanel){
+                getCenterPanel().remove(c);
+                break;
+            }
+        }
+        addCenterPanel(
+                new TicketDetailPanel(ticketId, () -> showCenterPanel("tickets")),
+                "detail"
+        );
+        showCenterPanel("detail");
+    }
+    
+    /**
+     * Boton Home - Siempre vuelve al listado de tickets.
+     */
+    @Override
+    protected void onSidebarButtonHome(){
+        showCenterPanel("tickets");
+    }
+    
+    /**
+     * Boton 1 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton1(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 2 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton2(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 3 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton3(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 4 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton4(){
+        //Aplicar funcionalidad proximamente
+    }
+    
+    /**
+     * Boton 5 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton5(){
+        //Aplicar funcionalidad proximamente
     }
 
     /**

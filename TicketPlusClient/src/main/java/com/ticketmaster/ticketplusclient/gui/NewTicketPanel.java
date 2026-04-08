@@ -306,5 +306,18 @@ public class NewTicketPanel extends JPanel {
             }
         });
     }
+    
+    /**
+    * Limpia todos los campos del formulario para permitir crear un nuevo ticket
+    * sin residuos de la entrada anterior.
+    */
+    public void reset() {
+        titleField.setText("Title: ...");
+        titleField.setForeground(TEXT_MUTED);
+        descArea.setText("");
+        priorityCombo.setSelectedItem("MEDIUM");
+        saveBtn.setEnabled(true);
+        saveBtn.setText("Save");
+    }
 }
 

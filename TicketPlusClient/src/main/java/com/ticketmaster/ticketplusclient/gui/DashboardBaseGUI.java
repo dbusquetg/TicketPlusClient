@@ -7,6 +7,7 @@ package com.ticketmaster.ticketplusclient.gui;
 import com.ticketmaster.ticketplusclient.session.AuthService;
 import com.ticketmaster.ticketplusclient.session.SessionManager;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -44,6 +45,26 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
     private final AuthService authService;
     
     /**
+     * Layour de tarjetas que gestiona la navegacion del area central ({@code pnlCCenter}).
+     * Se inicializa en {@link #setupCenterLayout()} antes del hook {@link #setupRoleDashboard()}
+     */
+    private CardLayout centerCardLayout;
+    
+    /**
+    * Referencia al panel de listado de tickets, compartida por ambos roles.
+    * Se asigna en {@link #setupRoleDashboard()} de cada subclase y se usa
+    * para refrescar la lista tras crear o modificar un ticket.
+    */
+    protected TicketListPanel ticketListPanel;
+    
+    /**
+    * Referencia al panel de creacion de ticket, compartida por ambos roles.
+    * Se asigna en {@link #setupRoleDashboard()} de cada subclase y se usa
+    * para refrescar la lista tras crear o modificar un ticket.
+    */
+    protected NewTicketPanel newTicketPanel;
+    
+    /**
      * Crea una nueva instancia del dashboard base, inicializando el servicio de
      * autenticación, los componentes gráficos, la barra lateral, la información
      * de sesión y delegando la configuración específica de rol al método
@@ -54,12 +75,13 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         this.authService = new AuthService();
         
         initComponents();
+        setupCenterLayout();
         setupSidebarButtons();
         sessionInfo();
         setupRoleDashboard();
         pack();
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(800, 500));
+        setMinimumSize(new Dimension(900, 600));
     }
 
     /**
@@ -102,6 +124,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
 
         jButtonHome.setBackground(new java.awt.Color(34, 40, 44));
         jButtonHome.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonHome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-organización-40.png"))); // NOI18N
         jButtonHome.setFocusPainted(false);
         jButtonHome.setPreferredSize(new java.awt.Dimension(40, 40));
         jButtonHome.addActionListener(new java.awt.event.ActionListener() {
@@ -169,6 +192,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
 
         jButtonLogout.setBackground(new java.awt.Color(34, 40, 44));
         jButtonLogout.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-salida-40.png"))); // NOI18N
         jButtonLogout.setFocusPainted(false);
         jButtonLogout.setPreferredSize(new java.awt.Dimension(40, 40));
         jButtonLogout.addActionListener(new java.awt.event.ActionListener() {
@@ -259,34 +283,115 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        onSidebarButton1();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        onSidebarButton2();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        onSidebarButton3();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        onSidebarButton4();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+        onSidebarButton5();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButtonHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHomeActionPerformed
-        // TODO add your handling code here:
+        onSidebarButtonHome();
     }//GEN-LAST:event_jButtonHomeActionPerformed
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
         doLogout();
-        
     }//GEN-LAST:event_jButtonLogoutActionPerformed
 
+    /**
+     * Inicializa el {@link CardLayout} sobre {@code pnlCCenter}.
+     */
+    private void setupCenterLayout(){
+        centerCardLayout = new CardLayout();
+        pnlCCenter.setLayout(centerCardLayout);
+    }
+    
+    /**
+     * Registra un panel en el area central bajo un nombre de tarjeta.
+     * 
+     * @param panel panel a registrar
+     * @param cardName nombre clave para referenciarlo con {@link #showCenterPanel}
+     */
+    protected void addCenterPanel(JPanel panel, String cardName){
+        pnlCCenter.add(panel, cardName);
+    }
+    
+    /**
+     * Muestra el panel registrado bajo el nombre indicado en el area central.
+     * 
+     * @param cardName nombre con el que se registro el panel en {@link #addCenterPanel}
+     */
+    protected void showCenterPanel(String cardName){
+        centerCardLayout.show(pnlCCenter, cardName);
+    }
+    
+    /**
+     * Devuelve el panel central ({@code pnlCCenter}) gestionado por le CardLayout.
+     * Disponible para subclases que necesiten añadir componentes directamente.
+     *
+     * @return el {@link JPanel} central ({@code pnlCCenter}) del dashboard
+     */
+    protected JPanel getCenterPanel(){
+        return pnlCCenter;
+    }
+    
+    /**
+     * Hool de inicializacion de rol.
+     * 
+     * <p>Las subclases sobrescriben este metodo para registrar sus paneles con
+     * {@link #addCenterPanel} y mostrar la vista inicial con {@link #showCenterPanel}.</P>
+     * 
+     */
+    protected void setupRoleDashboard(){}
+    
+    /**
+     * Acción del botón Home (posición superior de la sidebar).
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButtonHome(){}
+
+    /**
+     * Acción del botón 1 de la barra lateral.
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButton1(){}
+
+    /**
+     * Acción del botón 2 de la barra lateral.
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButton2(){}
+
+    /**
+     * Acción del botón 3 de la barra lateral.
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButton3(){}
+
+    /**
+     * Acción del botón 4 de la barra lateral.
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButton4(){}
+
+    /**
+     * Acción del botón 5 de la barra lateral.
+     * Las subclases sobreescriben este método para definir su navegación.
+     */
+    protected void onSidebarButton5(){}
+    
     /**
      * Configura el layout y el comportamiento visual de los botones de la barra
      * lateral de navegación, incluyendo el efecto hover (cambio de color al
@@ -297,10 +402,12 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         pnlSide.removeAll();
         pnlSide.setLayout(new BorderLayout());
         
+        //Boton Home - Anclado al norte del sidebar.
         jPanel2.setLayout(new GridBagLayout());
         jPanel2.setPreferredSize(new Dimension(80, 80));
         pnlSide.add(jPanel2, BorderLayout.NORTH);
         
+        //Botones del panel central - Centrados verticalmente.
         JPanel pnlMiddle = new JPanel();
         pnlMiddle.setBackground(new Color(21, 25, 28));
         pnlMiddle.setLayout(new BoxLayout(pnlMiddle, BoxLayout.Y_AXIS));
@@ -316,6 +423,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         pnlMiddle.add(Box.createVerticalGlue());
         pnlSide.add(pnlMiddle, BorderLayout.CENTER);
         
+        //Boton Logout - Anclado al sur.
         jPanel3.setLayout(new GridBagLayout());
         jPanel3.setPreferredSize(new Dimension(80,80));
         jPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,15,0));
@@ -358,8 +466,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
     private void sessionInfo(){
         SessionManager session = SessionManager.getInstance();
         if(session.isLoggedIn()){
-            String username = session.getUsername();
-            jLabelWelcomeUser.setText("Welcome "+username);
+            jLabelWelcomeUser.setText("Welcome "+session.getUsername());
         }
     }
     
@@ -379,26 +486,6 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         });
     }
     
-    /**
-     * Devuelve el panel central del dashboard donde las subclases deben añadir
-     * su contenido específico de rol.
-     *
-     * @return el {@link JPanel} central ({@code pnlCCenter}) del dashboard
-     */
-    protected JPanel getCenterPanel(){
-        return pnlCCenter;
-    }
-    
-    /**
-     * Método de extensión (patrón Template Method) que las subclases deben
-     * sobrescribir para añadir el contenido específico de cada rol de usuario
-     * al panel central del dashboard.
-     *
-     * <p>La implementación base no realiza ninguna acción.</p>
-     */
-    protected void setupRoleDashboard(){
-        
-    }
         
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

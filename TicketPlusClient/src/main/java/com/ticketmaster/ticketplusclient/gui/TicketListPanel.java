@@ -16,13 +16,16 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -70,7 +73,6 @@ public class TicketListPanel extends JPanel{
     private static final int ANIM_STEP = 8;   
     private static final int ANIM_DELAY_MS = 12;  
     
-    private final JPanel parentPanel;
     private final List<TicketRow> allTickets = new ArrayList<>();
     private List<TicketRow> filtered = new ArrayList<>();
     private String activeFilter = "All";
@@ -87,21 +89,26 @@ public class TicketListPanel extends JPanel{
     
     private final TicketService ticketService = new TicketService();
     
+    private final Runnable onNewTicket;
+    
+    private final Consumer<Long> onShowDetail;
+    
     /**
      * Crea el panel de lista de Tickets.
      * 
      */
-    public TicketListPanel(JPanel parentPanel){
-        this.parentPanel = parentPanel;
+    public TicketListPanel(Runnable onNewTicket, Consumer<Long> onShowDetail){
+        
+        this.onNewTicket = onNewTicket;
+        this.onShowDetail = onShowDetail;
+        
         setLayout(new BorderLayout(0,0));
         setBackground(BG_MID);
-        
-        loadTicketsFromServer();
         
         add(buildTopSection(), BorderLayout.NORTH);
         add(buildTicketSection(), BorderLayout.CENTER);
         
-        applyFilter("ALL");
+        loadTicketsFromServer();
     }
     
     // -------------------------------------------------------------------------
@@ -287,29 +294,7 @@ public class TicketListPanel extends JPanel{
         newBtn.setBorder(BorderFactory.createEmptyBorder(6,18,6,18));
         newBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newBtn.addMouseListener(hoverEffect(newBtn, ACCENT_BLUE, ACCENT_BLUE.darker()));
-        newBtn.addActionListener(e ->{
-            parentPanel.removeAll();
-            parentPanel.setLayout(new BorderLayout());
-            parentPanel.add(
-                new NewTicketPanel(
-                    () -> {
-                        parentPanel.removeAll();
-                        parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
-                        parentPanel.revalidate();
-                        parentPanel.repaint();
-                    },
-                    () -> {
-                        parentPanel.removeAll();
-                        parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
-                        parentPanel.revalidate();
-                        parentPanel.repaint();
-                    }
-                ),
-                BorderLayout.CENTER
-            );
-            parentPanel.revalidate();
-            parentPanel.repaint();
-        });
+        newBtn.addActionListener(e -> onNewTicket.run());
         
         bar.add(newBtn, BorderLayout.WEST);
         bar.add(buildFilterBar(), BorderLayout.EAST);
@@ -372,6 +357,14 @@ public class TicketListPanel extends JPanel{
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         
         return scroll;
+    }
+    
+    /**
+    * Recarga los tickets desde el servidor y reaplica el filtro activo.
+    * Debe llamarse tras crear o modificar un ticket para mantener la lista actualizada.
+    */
+    public void refresh() {
+        loadTicketsFromServer();
     }
     
     // -------------------------------------------------------------------------
@@ -453,6 +446,11 @@ public class TicketListPanel extends JPanel{
         }
         
         String username = session.getUsername();
+        
+        System.out.println(">>> SESSION username: [" + username + "]");
+        allTickets.forEach(t -> 
+            System.out.println(">>> TICKET createdBy: [" + t.createdBy + "]"));
+    
         List<TicketRow> visible = new ArrayList<>();
         for(TicketRow t : allTickets){
             boolean isOwner = username.equals(t.createdBy);
@@ -621,19 +619,23 @@ public class TicketListPanel extends JPanel{
         
         JPanel prioContent = new JPanel();
         prioContent.setOpaque(false);
-        prioContent.setLayout(new BoxLayout(prioContent, BoxLayout.Y_AXIS));
+        prioContent.setLayout(new GridBagLayout());
        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.insets = new Insets(0, 0, 4, 0);
+
         JLabel prioLabel = new JLabel("Priority");
         prioLabel.setForeground(TEXT_MUTED);
         prioLabel.setFont(prioLabel.getFont().deriveFont(Font.BOLD, 11f));
-        prioLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        gbc.gridy = 0;
+        prioContent.add(prioLabel, gbc);
         
-        JPanel dot = new PrioDot(priorityColor(ticket.priority));
-        dot.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        prioContent.add(prioLabel);
-        prioContent.add(Box.createRigidArea(new Dimension(0, 6)));
-        prioContent.add(dot);
+        PrioDot dot = new PrioDot(priorityColor(ticket.priority));
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        prioContent.add(dot, gbc);
         prioPanel.add(prioContent);
         
         JPanel right = new JPanel(new BorderLayout(8, 0));
@@ -711,51 +713,34 @@ public class TicketListPanel extends JPanel{
 
         boolean isAdmin = SessionManager.getInstance().isAdmin();
 
-        addMenuItem(menu, "Ver detalles", () -> {
-                parentPanel.removeAll();
-                parentPanel.setLayout(new BorderLayout());
-                parentPanel.add(
-                        new TicketDetailPanel(
-                        ticket.id,
-                        () -> {
-                            parentPanel.removeAll();
-                                    parentPanel.add(new TicketListPanel(parentPanel), BorderLayout.CENTER);
-                                    parentPanel.revalidate();
-                                    parentPanel.repaint();
-                        }
-                ),
-                BorderLayout.CENTER
-            );
-        parentPanel.revalidate();
-        parentPanel.repaint();
-        });
+        addMenuItem(menu, "Ver detalles", () -> onShowDetail.accept(ticket.id));
         
                 
         if (isAdmin) {
             addMenuItem(menu, "Asignarme", () ->
                 ticketService.assignToMe(ticket.id, new TicketService.ServiceCallback<TicketDTO>() {
-                    public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
-                    public void onError(String e) { JOptionPane.showMessageDialog(null, e); }
+                    @Override public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
+                    @Override public void onError(String e) { JOptionPane.showMessageDialog(null, e); }
                 }));
                 
             addMenuItem(menu, "Cambiar estado", () -> {
                 String[] options = {"In Progress", "Pending", "Solved", "Closed"};
                 String chosen = (String) JOptionPane.showInputDialog(
-                    TicketListPanel.this, "Nuevoestado:", "Cambiar estado",
+                    TicketListPanel.this, "Nuevo estado:", "Cambiar estado",
                     JOptionPane.PLAIN_MESSAGE, null, options, ticket.status);
                 if(chosen != null)
                     ticketService.changeStatus(ticket.id, chosen,
                             new TicketService.ServiceCallback<TicketDTO>(){
-                                public void onSuccess(TicketDTO t){loadTicketsFromServer();}
-                                public void onError(String e){JOptionPane.showMessageDialog(null, e);}
+                                @Override public void onSuccess(TicketDTO t){loadTicketsFromServer();}
+                                @Override public void onError(String e){JOptionPane.showMessageDialog(null, e);}
                                 
                             });
             });
 
             addMenuItem(menu, "Cerrar ticket", () -> 
             ticketService.closeTicket(ticket.id, new TicketService.ServiceCallback<TicketDTO>(){
-                public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
-                public void onError(String e)      { JOptionPane.showMessageDialog(null, e); }
+                @Override public void onSuccess(TicketDTO t) { loadTicketsFromServer(); }
+                @Override public void onError(String e)      { JOptionPane.showMessageDialog(null, e); }
             }));
         }    
 
@@ -800,6 +785,7 @@ public class TicketListPanel extends JPanel{
             this.color = color;
             setOpaque(false);
             setPreferredSize(new Dimension(14, 14));
+            setMinimumSize(new Dimension(14, 14));
             setMaximumSize(new Dimension(14, 14));
         }
 
@@ -819,41 +805,19 @@ public class TicketListPanel extends JPanel{
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Datos de muestra
-    // -------------------------------------------------------------------------
-
     /**
-     * Carga datos de muestra en {@link #allTickets}.
+     * Carga la lista de tickets desde el servidor mediante {@link TicketService}.
      *
-     * <p><b>TODO:</b> sustituir por llamada al servicio REST correspondiente.</p>
+     * <p>Al completar con éxito, actualiza {@link #allTickets} y reaplica
+     * el filtro activo. En caso de error muestra un diálogo informativo.</p>
      */
-    /*
-    private void loadSampleData() {
-        allTickets.add(new TicketRow("INC-1001", "Mi PC no enciende",
-                "Desde ayer mi ordenador no quiere arrancar...",           "HIGH",   "Opened",      "Maria",   "Erik"));
-        allTickets.add(new TicketRow("INC-1002", "Solicitud Monitor",
-                "Necesito un segundo monitor...",                          "MEDIUM", "Opened",      "Juan",    "Christian"));
-        allTickets.add(new TicketRow("INC-1003", "Dar acceso a la carpeta",
-                "Necesito acceso a la carpeta de RRHH...",                 "MEDIUM", "In Progress", "Pedro",   "Christian"));
-        allTickets.add(new TicketRow("INC-1004", "Incidencia Outlook",
-                "No puedo abrir Outlook",                                  "LOW",    "Solved",      "Javier",  "David"));
-        allTickets.add(new TicketRow("INC-1005", "Sin acceso a VPN",
-                "Desde el cambio de contraseña no puedo conectarme...",   "HIGH",   "Opened",      "Ana",     "Erik"));
-        allTickets.add(new TicketRow("INC-1006", "Impresora offline",
-                "La impresora del piso 2 no responde...",                  "LOW",    "Pending",     "Carlos",  "David"));
-        allTickets.add(new TicketRow("INC-1007", "Teams no inicia",
-                "Teams se queda en pantalla de carga...",                  "MEDIUM", "In Progress", "Laura",   "Christian"));
-        allTickets.add(new TicketRow("INC-1008", "Error al arrancar SAP",
-                "SAP muestra error de licencia al iniciar...",             "HIGH",   "Opened",      "Miguel",  "Erik"));
-        allTickets.add(new TicketRow("INC-1009", "Pantalla azul",
-                "El equipo muestra BSOD al iniciar...",                    "HIGH",   "Solved",      "Rosa",    "David"));
-    }*/
-    
     private void loadTicketsFromServer(){
         ticketService.getTickets(new TicketService.ServiceCallback<List<TicketDTO>>() {
             @Override
             public void onSuccess(List<TicketDTO> tickets){
+                System.out.println(">>> onSuccess llamado. Tickets recibidos: " + tickets.size());
+                tickets.forEach(t -> System.out.println(">>> DTO createdBy: [" + t.getCreatedBy() + "] status: [" + t.getStatus() + "]"));
+
                 allTickets.clear();
                 for(TicketDTO dto: tickets){
                     allTickets.add(new TicketRow(
@@ -868,10 +832,15 @@ public class TicketListPanel extends JPanel{
                             
                     ));
                 }
-                applyFilter("ALL");
+                // LOG TEMPORAL — verificar que los datos llegan
+                System.out.println(">>> Tickets cargados: " + allTickets.size());
+                allTickets.forEach(t ->
+                    System.out.println(">>> TICKET createdBy: [" + t.createdBy + "]"));
+                applyFilter(activeFilter);
             }
             @Override
             public void onError(String errorMessage){
+                System.out.println(">>> onError: " + errorMessage);
                 JOptionPane.showMessageDialog(TicketListPanel.this, errorMessage,
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
