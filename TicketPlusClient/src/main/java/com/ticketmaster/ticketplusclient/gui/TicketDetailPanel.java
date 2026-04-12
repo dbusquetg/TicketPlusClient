@@ -170,11 +170,75 @@ public class TicketDetailPanel extends JPanel {
         JPanel area = new JPanel(new BorderLayout(10, 0));
         area.setBackground(BG_MID);
         area.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
+        
+        JPanel leftPanel = new JPanel(new BorderLayout(0,8));
+        leftPanel.setBackground(BG_MID);
+        leftPanel.add(buildTicketInfoCard(), BorderLayout.NORTH); 
+        leftPanel.add(buildCommentSection(), BorderLayout.CENTER);
 
-        area.add(buildCommentSection(), BorderLayout.CENTER);
+        area.add(leftPanel, BorderLayout.CENTER);
         area.add(buildSidebar(),        BorderLayout.EAST);
 
         return area;
+    }
+    
+    /**
+    * Construye la tarjeta superior con la referencia, título y descripción
+    * del ticket actual.
+    *
+    * @return panel con la información principal del ticket
+    */
+    private JPanel buildTicketInfoCard() {
+        JPanel card = new JPanel(new BorderLayout(0, 8));
+        card.setBackground(BG_CARD);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(12, 16, 12, 16)
+        ));
+
+        // Cabecera: referencia + fecha de creación
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(BG_CARD);
+        header.setBorder(new MatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
+        header.setBorder(BorderFactory.createCompoundBorder(
+            new MatteBorder(0, 0, 1, 0, new Color(220, 220, 220)),
+            BorderFactory.createEmptyBorder(0, 0, 8, 0)
+        ));
+
+        JLabel refLabel = new JLabel("#" + ticket.getRef());
+        refLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        refLabel.setForeground(TEXT_DARK);
+
+        JLabel dateLabel = new JLabel(formatDate(ticket.getCreatedAt()));
+        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        dateLabel.setForeground(TEXT_MUTED);
+        dateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        header.add(refLabel,  BorderLayout.WEST);
+        header.add(dateLabel, BorderLayout.EAST);
+
+        // Título
+        JLabel titleLabel = new JLabel(ticket.getTitle());
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        titleLabel.setForeground(TEXT_DARK);
+
+        // Descripción con wrap automático via HTML
+        JLabel descLabel = new JLabel(
+            "<html><body style='width:100%'>" + ticket.getDescription() + "</body></html>");
+        descLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        descLabel.setForeground(TEXT_MUTED);
+
+        // Cuerpo: título + descripción
+        JPanel body = new JPanel(new BorderLayout(0, 6));
+        body.setBackground(BG_CARD);
+        body.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
+        body.add(titleLabel, BorderLayout.NORTH);
+        body.add(descLabel,  BorderLayout.CENTER);
+
+        card.add(header, BorderLayout.NORTH);
+        card.add(body,   BorderLayout.CENTER);
+
+        return card;
     }
 
     /**

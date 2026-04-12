@@ -19,6 +19,7 @@ public class TicketDTO {
     private String status;
     private String createdBy;
     private String agent;
+    private String createdAt;
     
     public TicketDTO(){
         
@@ -86,6 +87,14 @@ public class TicketDTO {
 
     public void setAgent(String agent) {
         this.agent = agent;
+    }
+    
+    public String getCreatedAt(){
+        return createdAt;
+    }
+    
+    public void setCreatedAt(String c){
+        this.createdAt = c;
     }
     
     

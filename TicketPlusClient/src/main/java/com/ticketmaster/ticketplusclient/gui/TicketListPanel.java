@@ -828,7 +828,8 @@ public class TicketListPanel extends JPanel{
                             dto.getPriority(),
                             dto.getStatus(),
                             dto.getCreatedBy(),
-                            dto.getAgent() != null ? dto.getAgent() : "Sin asignar"
+                            dto.getAgent() != null ? dto.getAgent() : "Sin asignar",
+                            dto.getCreatedAt()
                             
                     ));
                 }
@@ -951,6 +952,8 @@ public class TicketListPanel extends JPanel{
 
         /** Nombre del agente asignado al ticket. */
         public final String agent;
+        
+        public final String createdAt;
 
         /**
          * Crea un nuevo registro de ticket con todos sus campos.
@@ -966,7 +969,7 @@ public class TicketListPanel extends JPanel{
          */
         public TicketRow(Long id, String ref, String title, String description,
                          String priority, String status,
-                         String createdBy, String agent) {
+                         String createdBy, String agent, String createdAt) {
             this.id = id;
             this.ref = ref;
             this.title = title;
@@ -975,6 +978,7 @@ public class TicketListPanel extends JPanel{
             this.status = status;
             this.createdBy = createdBy;
             this.agent = agent;
+            this.createdAt = createdAt;
         }
     }
     
