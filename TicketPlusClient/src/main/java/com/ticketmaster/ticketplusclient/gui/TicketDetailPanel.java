@@ -431,7 +431,7 @@ public class TicketDetailPanel extends JPanel {
             sidebar.add(Box.createRigidArea(new Dimension(0, 4)));
 
             // TODO TEA3: cargar lista de agentes del servidor
-            agentCombo = new JComboBox<>(new String[]{"Sin asignar", "admin", "erik", "christian", "david"});
+            agentCombo = new JComboBox<>(new String[]{"Sin asignar", "admin", "erik", "christian", "david"});//Recuperar de agentes del sistema, por medio de endpoint
             agentCombo.setSelectedItem(ticket.getAgent() != null ? ticket.getAgent() : "Sin asignar");
             agentCombo.setBackground(new Color(60, 68, 76));
             agentCombo.setForeground(Color.WHITE);
