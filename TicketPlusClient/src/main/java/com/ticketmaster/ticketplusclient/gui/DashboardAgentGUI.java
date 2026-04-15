@@ -104,7 +104,11 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
             }
         }
         addCenterPanel(
-                new TicketDetailPanel(ticketId, () -> showCenterPanel("tickets")),
+                new TicketDetailPanel(ticketId, () -> {
+                    ticketListPanel.refresh();
+                    showCenterPanel("tickets");
+                
+                }),
                 "detail"
         );
         showCenterPanel("detail");

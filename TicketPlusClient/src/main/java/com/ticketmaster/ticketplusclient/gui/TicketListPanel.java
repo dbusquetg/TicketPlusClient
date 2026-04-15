@@ -21,6 +21,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -30,13 +31,16 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.MatteBorder;
 
@@ -75,7 +79,7 @@ public class TicketListPanel extends JPanel{
     
     private final List<TicketRow> allTickets = new ArrayList<>();
     private List<TicketRow> filtered = new ArrayList<>();
-    private String activeFilter = "All";
+    private String activeFilter = "Opened";
     private int currentPage = 0;
     private boolean statsExpanded = true;
     private Timer animTimer;
@@ -86,6 +90,7 @@ public class TicketListPanel extends JPanel{
     private JLabel pageLabel;
     private JButton prevBtn;
     private JButton nextBtn;
+    private JComboBox<String> pageCombo;
     
     private final TicketService ticketService = new TicketService();
     
@@ -312,7 +317,7 @@ public class TicketListPanel extends JPanel{
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         panel.setBackground(BG_MID);
         
-        for(String f: new String[]{"All", "Opened", "In Progress", "Pendind", "Solved"}){
+        for(String f: new String[]{"All", "Opened", "In Progress", "Pendind", "Solved", "Closed"}){
             panel.add(buildFilterButton(f));
         }
         
@@ -378,28 +383,93 @@ public class TicketListPanel extends JPanel{
      * @return panel con los controles de paginacion
      */
     private JPanel buildPagination(){
-        JPanel bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
+        JPanel bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 4));
         bar.setBackground(BG_MID);
         
         prevBtn = buildNavButton("<");
         prevBtn.addActionListener(e -> {
-            if(currentPage > 0) { currentPage--; renderPage();}
+            if(currentPage > 0) { currentPage--; renderPage(); syncPageCombo();}
         });
         
-        pageLabel = new JLabel("1..1");
-        pageLabel.setForeground(TEXT_MUTED);
-        pageLabel.setFont(pageLabel.getFont().deriveFont(12f));
+        // Combo de páginas — se rellena en renderPage()
+        pageCombo = new JComboBox<>();
+        pageCombo.setBackground(BG_DARK);
+        pageCombo.setForeground(TEXT_MUTED);
+        pageCombo.setFocusable(false);
+        pageCombo.setFont(pageCombo.getFont().deriveFont(12f));
+        pageCombo.setPreferredSize(new Dimension(70, 24));
+        pageCombo.setEditable(true);
         
+        // Estilo del campo editable
+        JTextField editor = (JTextField) pageCombo.getEditor().getEditorComponent();
+        editor.setBackground(BG_DARK);
+        editor.setForeground(TEXT_MUTED);
+        editor.setFont(editor.getFont().deriveFont(12f));
+        editor.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // Navegar al seleccionar o escribir
+        pageCombo.addActionListener(e -> {
+            String cmd = e.getActionCommand();
+                if ("comboBoxChanged".equals(cmd) || "comboBoxEdited".equals(cmd)) {
+                    navigateToSelectedPage();
+                }
+            });
+
         nextBtn = buildNavButton(">");
         nextBtn.addActionListener(e -> {
-            if (currentPage < totalPages() - 1) { currentPage++; renderPage();}
+            if (currentPage < totalPages() - 1) { currentPage++; renderPage(); syncPageCombo(); }
         });
         
         bar.add(prevBtn);
-        bar.add(pageLabel);
+        bar.add(pageCombo);
         bar.add(nextBtn);
         
         return bar;
+    }
+    
+    /**
+    * Sincroniza el combo de páginas con el estado actual de la paginación.
+    * Rellena las opciones disponibles y selecciona la página actual.
+    */
+    private void syncPageCombo() {
+        // Desconectar el listener temporalmente para evitar disparos al rellenar
+        ActionListener[] listeners = pageCombo.getActionListeners();
+        for (ActionListener l : listeners) pageCombo.removeActionListener(l);
+
+        pageCombo.removeAllItems();
+        int total = totalPages();
+        for (int i = 1; i <= total; i++) {
+            pageCombo.addItem(String.valueOf(i));
+        }
+        pageCombo.setSelectedItem(String.valueOf(currentPage + 1));
+
+        // Reconectar el listener
+        for (ActionListener l : listeners) pageCombo.addActionListener(l);
+
+        prevBtn.setEnabled(currentPage > 0);
+        nextBtn.setEnabled(currentPage < total - 1);
+    }
+    
+    /**
+    * Navega a la página indicada en el combo/campo de texto.
+    * Acepta tanto la selección del combo como un número escrito manualmente.
+    */
+    private void navigateToSelectedPage() {
+        try {
+            // Leer directamente del campo de texto editable
+            JTextField editor = (JTextField) pageCombo.getEditor().getEditorComponent();
+            String text = editor.getText().trim();
+
+            int page = Integer.parseInt(text) - 1;
+            if (page >= 0 && page < totalPages() && page != currentPage) {
+                currentPage = page;
+                renderPage();
+            } else {
+                syncPageCombo(); // restaurar si el número está fuera de rango
+            }
+        } catch (NumberFormatException ignored) {
+            syncPageCombo(); // restaurar si no es un número
+        }
     }
     
     /**
@@ -416,7 +486,7 @@ public class TicketListPanel extends JPanel{
         btn.setFont(btn.getFont().deriveFont(16f));
         btn.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(60,70,80), 1, true),
-                BorderFactory.createEmptyBorder(2,14,2,14)
+                BorderFactory.createEmptyBorder(2,10,2,10)
         ));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
@@ -456,7 +526,9 @@ public class TicketListPanel extends JPanel{
             boolean isOwner = username.equals(t.createdBy);
             boolean isOpen = "Opened".equals(t.status)
                     || "In Progress".equals(t.status)
-                    || "Pending".equals(t.status);
+                    || "Pending".equals(t.status)
+                    || "Solved".equals(t.status)
+                    || "Closed".equals(t.status);
             if(isOwner && isOpen) visible.add(t);
         }
         
@@ -501,7 +573,7 @@ public class TicketListPanel extends JPanel{
         if(!(east instanceof JPanel filterBar)) return;
         
         filterBar.removeAll();
-        for(String f : new String[]{"All", "Opened", "In Progress", "Pending", "Solved"}){
+        for(String f : new String[]{"All", "Opened", "In Progress", "Pending", "Solved", "Closed"}){
             filterBar.add(buildFilterButton(f));
         }
         filterBar.revalidate();
@@ -517,7 +589,7 @@ public class TicketListPanel extends JPanel{
         
         int from = currentPage * PAGE_SIZE;
         int to = Math.min(from + PAGE_SIZE, filtered.size());
-        int total = totalPages();
+        //int total = totalPages();
         
         for(int i = from; i < to; i++){
             ticketContainer.add(buildTicketRow(filtered.get(i)));
@@ -532,10 +604,11 @@ public class TicketListPanel extends JPanel{
             ticketContainer.add(empty);
         }
         
-        pageLabel.setText((currentPage + 1) + ".." + Math.max(1, total));
+        /*pageLabel.setText((currentPage + 1) + ".." + Math.max(1, total));
         prevBtn.setEnabled(currentPage > 0);
-        nextBtn.setEnabled(currentPage < total - 1);
+        nextBtn.setEnabled(currentPage < total - 1);*/
         
+        syncPageCombo();
         ticketContainer.revalidate();
         ticketContainer.repaint();
     }
