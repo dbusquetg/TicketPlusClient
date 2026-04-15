@@ -729,10 +729,21 @@ public class TicketListPanel extends JPanel{
                     TicketListPanel.this, "Nuevo estado:", "Cambiar estado",
                     JOptionPane.PLAIN_MESSAGE, null, options, ticket.status);
                 if(chosen != null)
+                    System.out.println(">>> changeStatus — ticket.id: [" + ticket.id + "]");
+                    System.out.println(">>> changeStatus — ticket.ref: [" + ticket.ref + "]");
+                    System.out.println(">>> changeStatus — nuevo estado: [" + chosen + "]");
+                    System.out.println(">>> changeStatus — URL esperada: PATCH /api/tickets/" + ticket.id + "/status");
+                    
                     ticketService.changeStatus(ticket.id, chosen,
                             new TicketService.ServiceCallback<TicketDTO>(){
-                                @Override public void onSuccess(TicketDTO t){loadTicketsFromServer();}
-                                @Override public void onError(String e){JOptionPane.showMessageDialog(null, e);}
+                                @Override public void onSuccess(TicketDTO t){
+                                    System.out.println(">>> changeStatus OK — nuevo status: " + t.getStatus());
+                                    loadTicketsFromServer();
+                                }
+                                @Override public void onError(String e){
+                                    System.out.println(">>> changeStatus ERROR: " + e);
+                                    JOptionPane.showMessageDialog(null, e);
+                                }
                                 
                             });
             });

@@ -63,6 +63,7 @@ public class ClientAPI {
     public static Retrofit getClient() {
         
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         
         if(retrofit == null){
             
