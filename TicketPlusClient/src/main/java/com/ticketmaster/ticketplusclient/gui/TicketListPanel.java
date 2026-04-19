@@ -130,10 +130,12 @@ public class TicketListPanel extends JPanel{
         JPanel wrapper = new JPanel(new BorderLayout(0,0));
         wrapper.setBackground(BG_MID);
         
-        statsPanel = buildStatsPanel();
+        statsPanel = new JPanel(new GridLayout(1, 4, 10, 0));
+        statsPanel.setBackground(BG_MID);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
         statsPanel.setPreferredSize(new Dimension(0, STATS_HEIGHT_MAX));
-        wrapper.add(statsPanel, BorderLayout.CENTER);
-        
+
+        wrapper.add(statsPanel,        BorderLayout.CENTER);
         wrapper.add(buildToggleStrip(), BorderLayout.SOUTH);
         return wrapper;
     }
@@ -217,6 +219,30 @@ public class TicketListPanel extends JPanel{
         
         strip.add(toggleBtn);
         return strip;
+    }
+    
+    /**
+    * Reconstruye las tarjetas de estadísticas con los datos actuales.
+    * Usa la lista visible para el rol y aplica el filtro activo si está
+    * seleccionado un estado concreto (no "All").
+    * Debe llamarse tras cada carga o cambio de filtro.
+    */
+    private void refreshStats() {
+
+        List<TicketRow> base = getVisibleTickets();
+
+        statsPanel.removeAll();
+        statsPanel.setLayout(new GridLayout(1, 4, 10, 0));
+        statsPanel.setBackground(BG_MID);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
+
+        statsPanel.add(buildStatCard("Open Tickets", countByStatus(base, "Opened"), new Color(207, 97,  54)));
+        statsPanel.add(buildStatCard("In Progress", countByStatus(base, "In Progress"), new Color(54,  130, 207)));
+        statsPanel.add(buildStatCard("Answer Pending", countByStatus(base, "Pending"), new Color(207, 160, 54)));
+        statsPanel.add(buildStatCard("Solved", countByStatus(base, "Solved"), new Color(54,  160, 100)));
+
+        statsPanel.revalidate();
+        statsPanel.repaint();
     }
     
     // -------------------------------------------------------------------------
@@ -550,6 +576,7 @@ public class TicketListPanel extends JPanel{
             if("All".equals(filter) || filter.equals(t.status)) filtered.add(t);
         }
         
+        refreshStats();
         refreshFilterBar();
         renderPage();
     }

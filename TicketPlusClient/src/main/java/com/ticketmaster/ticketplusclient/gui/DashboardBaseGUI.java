@@ -124,7 +124,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
 
         jButtonHome.setBackground(new java.awt.Color(34, 40, 44));
         jButtonHome.setForeground(new java.awt.Color(255, 255, 255));
-        jButtonHome.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-organización-40.png"))); // NOI18N
+        jButtonHome.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-organizacion-40.png")));
         jButtonHome.setFocusPainted(false);
         jButtonHome.setPreferredSize(new java.awt.Dimension(40, 40));
         jButtonHome.addActionListener(new java.awt.event.ActionListener() {
@@ -192,7 +192,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
 
         jButtonLogout.setBackground(new java.awt.Color(34, 40, 44));
         jButtonLogout.setForeground(new java.awt.Color(255, 255, 255));
-        jButtonLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-salida-40.png"))); // NOI18N
+        jButtonLogout.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-salida-40.png")));
         jButtonLogout.setFocusPainted(false);
         jButtonLogout.setPreferredSize(new java.awt.Dimension(40, 40));
         jButtonLogout.addActionListener(new java.awt.event.ActionListener() {
