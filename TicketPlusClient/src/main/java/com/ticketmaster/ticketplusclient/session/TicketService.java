@@ -60,7 +60,7 @@ public class TicketService {
            @Override
            public void onFailure(Call<List<TicketDTO>> call, Throwable t){
                SwingUtilities.invokeLater(() ->
-                    callback.onError("Sin conexino: "+t.getMessage()));
+                    callback.onError("Sin conexion: "+t.getMessage()));
            }
         });
     }
