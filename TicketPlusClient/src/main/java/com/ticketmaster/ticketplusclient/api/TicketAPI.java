@@ -30,7 +30,7 @@ import retrofit2.http.Path;
  * @author Christian
  * @see ClientAPI
  * @see TicketDTO
- * @see CommnetDTO
+ * @see CommentDTO
  */
 public interface TicketAPI {
     
