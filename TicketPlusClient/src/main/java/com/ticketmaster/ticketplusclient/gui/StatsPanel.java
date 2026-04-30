@@ -20,19 +20,6 @@ import javax.swing.border.*;
 /**
  * Panel de estadísticas y métricas de tickets.
  *
- * <p>Estructura visual:</p>
- * <pre>
- * ┌────────────────────────────────────────────────────┐
- * │ [Open Tickets] [In Progress] [Pending] [Solved]    │  ← barra oscura (igual que TicketListPanel)
- * ├────────────────────────────────────────────────────┤
- * │ Panel blanco central:                              │
- * │   [Opened/mes] [Comentarios] [+4h] [Avg time]     │  ← 4 tarjetas de métricas detalladas
- * │   [Dona prio]  [Barras estado]  [Línea 7 días]    │  ← 3 gráficos
- * ├────────────────────────────────────────────────────┤  ← sidebar filtros (solo ADMIN)
- * │ [Back]                                             │
- * └────────────────────────────────────────────────────┘
- * </pre>
- *
  * <p>Modos:</p>
  * <ul>
  *   <li><b>Agente</b> ({@code userMode=false}): todos los tickets, sidebar de filtros visible.</li>
