@@ -33,6 +33,8 @@ import javax.swing.*;
  * @see DashboardBaseGUI
  */
 public class DashboardUserGUI extends DashboardBaseGUI {
+    
+    private StatsPanel statsPanel;
 
     /**
      * Crea el dashboard del usuario estándar.
@@ -64,9 +66,15 @@ public class DashboardUserGUI extends DashboardBaseGUI {
      */
     protected void setupRoleDashboard() {
         ticketListPanel = new TicketListPanel(
-                        () -> showCenterPanel("newTicket"),
+                        () -> {
+                                newTicketPanel.reset();
+                                showCenterPanel("newTicket");
+                        },
                         this::showTicketDetail
         );
+        
+        statsPanel = new StatsPanel(() -> showCenterPanel("tickets"), true);
+        
         addCenterPanel(
                 ticketListPanel,
                 "tickets"
@@ -78,6 +86,7 @@ public class DashboardUserGUI extends DashboardBaseGUI {
                 ),
                 "newTicket"
         );
+        addCenterPanel(statsPanel,      "stats");
         showCenterPanel("tickets");
     }
     
@@ -129,7 +138,8 @@ public class DashboardUserGUI extends DashboardBaseGUI {
      */
     @Override
     protected void onSidebarButton2(){
-        //Aplicar funcionalidad proximamente
+        statsPanel.refresh();
+        showCenterPanel("stats");
     }
     
     /**

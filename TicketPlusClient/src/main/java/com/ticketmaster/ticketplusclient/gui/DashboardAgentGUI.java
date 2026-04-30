@@ -29,6 +29,8 @@ import javax.swing.*;
  */
 public class DashboardAgentGUI extends DashboardBaseGUI {
 
+    private StatsPanel statsPanel;
+    
     /**
      * Crea una nueva instancia del dashboard de agente, delegando la
      * inicialización base a {@link DashboardBaseGUI#DashboardBaseGUI()}.
@@ -77,6 +79,9 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
             () -> showCenterPanel("tickets")   
         );
         
+        // Panel de estadísticas — Back vuelve al listado
+        statsPanel = new StatsPanel(() -> showCenterPanel("tickets"), false);
+        
         addCenterPanel(
                 ticketListPanel,
                 "tickets"
@@ -86,6 +91,9 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
                 newTicketPanel,
                 "newTicket"
         );
+        
+        addCenterPanel(statsPanel,      "stats");
+        
         showCenterPanel("tickets");
     }
     
@@ -135,7 +143,8 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
      */
     @Override
     protected void onSidebarButton2(){
-        //Aplicar funcionalidad proximamente
+        statsPanel.refresh();
+        showCenterPanel("stats");
     }
     
     /**

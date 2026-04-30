@@ -147,6 +147,7 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
         pnlSide.add(jButton1);
 
         jButton2.setBackground(new java.awt.Color(34, 40, 44));
+        jButton2.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-libro-40.png")));
         jButton2.setFocusPainted(false);
         jButton2.setPreferredSize(new java.awt.Dimension(40, 40));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
