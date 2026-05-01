@@ -20,6 +20,7 @@ public class TicketDTO {
     private String createdBy;
     private String agent;
     private String createdAt;
+    private String resolvedAt;
     
     public TicketDTO(){
         
@@ -95,6 +96,14 @@ public class TicketDTO {
     
     public void setCreatedAt(String c){
         this.createdAt = c;
+    }
+    
+    public String getResolvedAt() {
+        return resolvedAt;
+    }   
+
+    public void setResolvedAt(String resolvedAt) {
+        this.resolvedAt = resolvedAt;
     }
     
     

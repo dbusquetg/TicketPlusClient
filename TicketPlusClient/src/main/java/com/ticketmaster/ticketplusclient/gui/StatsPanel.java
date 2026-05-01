@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.util.Objects;
 
 /**
  * Panel de estadísticas y métricas de tickets.
@@ -655,7 +656,46 @@ public class StatsPanel extends JPanel {
 
         lblOpenedMonth.setText(String.valueOf(openedMonth));
         lblOverdue.setText(String.valueOf(overdueCount));
-        lblAvgTime.setText("N/A"); // requiere campo resolvedAt en TicketDTO
+        
+        double avgHours = calcAvgResolutionHours();
+        lblAvgTime.setText(avgHours < 0 ? "N/A" : formatAvgTime(avgHours));
+    }
+    
+    /**
+    * Calcula el tiempo promedio de resolución en horas para los tickets
+    * en estado Solved o Closed que tengan createdAt y resolvedAt informados.
+    *
+    * @return promedio en horas o {@code -1} si no hay datos suficientes
+    */
+    private double calcAvgResolutionHours() {
+        List<Double> times = filteredTickets.stream()
+            .filter(t -> ("Solved".equals(t.getStatus()) || "Closed".equals(t.getStatus()))
+                      && t.getCreatedAt()  != null
+                      && t.getResolvedAt() != null)
+            .map(t -> {
+                LocalDateTime created  = parseDateTime(t.getCreatedAt());
+                LocalDateTime resolved = parseDateTime(t.getResolvedAt());
+                if (created == null || resolved == null) return null;
+                return (double) ChronoUnit.MINUTES.between(created, resolved) / 60.0;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+        return times.isEmpty()
+            ? -1
+            : times.stream().mapToDouble(Double::doubleValue).average().orElse(-1);
+    }
+
+    /**
+     * Formatea el tiempo promedio en horas a una cadena legible.
+     *
+     * @param hours horas promedio
+     * @return cadena formateada (p.ej. "2h 30m")
+     */
+    private String formatAvgTime(double hours) {
+        int h = (int) hours;
+        int m = (int) ((hours - h) * 60);
+        return h + "h " + m + "m";
     }
 
     /**
