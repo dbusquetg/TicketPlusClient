@@ -4,7 +4,6 @@
  */
 package com.ticketmaster.ticketplusclient.gui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,15 +13,19 @@ import java.awt.GridLayout;
 import javax.swing.*;
 
 /**
- * Panel de control específico para usuarios con rol de Agente (ADMIN) en TicketPlus.
+ * Panel de control específico para usuarios con rol de Agente (ADMIN) en
+ * TicketPlus.
  *
- * <p>Extiende {@link DashboardBaseGUI} e implementa el método
- * {@link #setupRoleDashboard()} del patrón Template Method para personalizar
- * el área central del dashboard con información relevante para un agente:
- * tarjetas de estadísticas de tickets y un panel de gestión de tickets.</p>
+ * <p>
+ * Extiende {@link DashboardBaseGUI} e implementa el método
+ * {@link #setupRoleDashboard()} del patrón Template Method para personalizar el
+ * área central del dashboard con información relevante para un agente: tarjetas
+ * de estadísticas de tickets y un panel de gestión de tickets.</p>
  *
- * <p>Los datos mostrados son de momento estáticos (simulados); se conectarán
- * con el servidor en sprints posteriores a través de {@link com.ticketmaster.ticketplusclient.api.DataAPI}.</p>
+ * <p>
+ * Los datos mostrados son de momento estáticos (simulados); se conectarán con
+ * el servidor en sprints posteriores a través de
+ * {@link com.ticketmaster.ticketplusclient.api.DataAPI}.</p>
  *
  * @author Christian
  * @see DashboardBaseGUI
@@ -30,12 +33,13 @@ import javax.swing.*;
 public class DashboardAgentGUI extends DashboardBaseGUI {
 
     private StatsPanel statsPanel;
-    
+    private UserManagementPanel userManagementPanel;
+
     /**
      * Crea una nueva instancia del dashboard de agente, delegando la
      * inicialización base a {@link DashboardBaseGUI#DashboardBaseGUI()}.
      */
-    public DashboardAgentGUI(){
+    public DashboardAgentGUI() {
         super();
     }
 
@@ -54,59 +58,65 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Registra los paneles del agente y muestra el listado de tickets al arrancar.
-     * 
-     * <p>El link {@code Consumer<Long>} inyectado en {@link TicketListPanel} es
-     * {@link #showTicketDetail}, que recrea el panel de detalle con el ticket correcto 
-     * cada vez que se selecciona uno.</p>
+     * Registra los paneles del agente y muestra el listado de tickets al
+     * arrancar.
+     *
+     * <p>
+     * El link {@code Consumer<Long>} inyectado en {@link TicketListPanel} es
+     * {@link #showTicketDetail}, que recrea el panel de detalle con el ticket
+     * correcto cada vez que se selecciona uno.</p>
      */
     @Override
     protected void setupRoleDashboard() {
         ticketListPanel = new TicketListPanel(
-            () -> {
-                newTicketPanel.reset();
-                showCenterPanel("newTicket");
-            },
-            this::showTicketDetail
+                () -> {
+                    newTicketPanel.reset();
+                    showCenterPanel("newTicket");
+                },
+                this::showTicketDetail
         );
-        
-        
+
         newTicketPanel = new NewTicketPanel(
-            () -> {
-                ticketListPanel.refresh();
-                showCenterPanel("tickets");
-            },
-            () -> showCenterPanel("tickets")   
+                () -> {
+                    ticketListPanel.refresh();
+                    showCenterPanel("tickets");
+                },
+                () -> showCenterPanel("tickets")
         );
-        
+
         // Panel de estadísticas — Back vuelve al listado
         statsPanel = new StatsPanel(() -> showCenterPanel("tickets"), false);
-        
+        // Panel de gestión de usuarios — Back vuelve al listado
+        userManagementPanel = new UserManagementPanel(() -> showCenterPanel("tickets"));
+
         addCenterPanel(
                 ticketListPanel,
                 "tickets"
         );
-        
+
         addCenterPanel(
                 newTicketPanel,
                 "newTicket"
         );
-        
-        addCenterPanel(statsPanel,      "stats");
-        
+
+        addCenterPanel(statsPanel, "stats");
+        addCenterPanel(userManagementPanel, "users");
+
         showCenterPanel("tickets");
     }
-    
+
     /**
      * Abre el panel de detalle para el ticket con el identificador indicado.
-     * 
-     * <p>Elimina el panel de detalle anterior si existia (Evita acumular paneles)</p>
-     * 
-     * @param ticketId 
+     *
+     * <p>
+     * Elimina el panel de detalle anterior si existia (Evita acumular
+     * paneles)</p>
+     *
+     * @param ticketId
      */
-    private void showTicketDetail(Long ticketId){
-        for(Component c : getCenterPanel().getComponents()){
-            if(c instanceof TicketDetailPanel){
+    private void showTicketDetail(Long ticketId) {
+        for (Component c : getCenterPanel().getComponents()) {
+            if (c instanceof TicketDetailPanel) {
                 getCenterPanel().remove(c);
                 break;
             }
@@ -115,65 +125,66 @@ public class DashboardAgentGUI extends DashboardBaseGUI {
                 new TicketDetailPanel(ticketId, () -> {
                     ticketListPanel.refresh();
                     showCenterPanel("tickets");
-                
+
                 }),
                 "detail"
         );
         showCenterPanel("detail");
     }
-    
+
     /**
      * Boton Home - Siempre vuelve al listado de tickets.
      */
     @Override
-    protected void onSidebarButtonHome(){
+    protected void onSidebarButtonHome() {
         showCenterPanel("tickets");
     }
-    
+
     /**
      * Boton 1 - Navega a...
      */
     @Override
-    protected void onSidebarButton1(){
-        //Aplicar funcionalidad proximamente
+    protected void onSidebarButton1() {
+        userManagementPanel.refresh();
+        showCenterPanel("users");
     }
-    
+
     /**
      * Boton 2 - Navega a...
      */
     @Override
-    protected void onSidebarButton2(){
+    protected void onSidebarButton2() {
         statsPanel.refresh();
         showCenterPanel("stats");
     }
-    
+
     /**
      * Boton 3 - Navega a...
      */
     @Override
-    protected void onSidebarButton3(){
-        //Aplicar funcionalidad proximamente
-    }
-    
-    /**
-     * Boton 4 - Navega a...
-     */
-    @Override
-    protected void onSidebarButton4(){
-        //Aplicar funcionalidad proximamente
-    }
-    
-    /**
-     * Boton 5 - Navega a...
-     */
-    @Override
-    protected void onSidebarButton5(){
+    protected void onSidebarButton3() {
         //Aplicar funcionalidad proximamente
     }
 
     /**
-     * Construye el panel de estadísticas del agente con tres tarjetas:
-     * tickets abiertos, resueltos hoy y asignados al agente.
+     * Boton 4 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton4() {
+        //Aplicar funcionalidad proximamente
+    }
+
+    /**
+     * Boton 5 - Navega a...
+     */
+    @Override
+    protected void onSidebarButton5() {
+        //Aplicar funcionalidad proximamente
+    }
+
+    /**
+     * Construye el panel de estadísticas del agente con tres tarjetas: tickets
+     * abiertos, resueltos hoy y asignados al agente.
      *
      * @return panel {@link JPanel} con el layout de estadísticas en cuadrícula
      */

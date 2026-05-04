@@ -23,15 +23,18 @@ import javax.swing.plaf.basic.BasicButtonUI;
 /**
  * Ventana base del panel de control (dashboard) de la aplicación TicketPlus.
  *
- * <p>Implementa el patrón <b>Template Method</b>: define la estructura común del
- * dashboard (barra lateral de navegación, cabecera con bienvenida y botón de logout,
- * panel central) y declara el método {@link #setupRoleDashboard()} como punto de
- * extensión para que las subclases ({@link DashboardAgentGUI} y {@link DashboardUserGUI})
- * personalicen el contenido del área central según el rol del usuario.</p>
+ * <p>
+ * Implementa el patrón <b>Template Method</b>: define la estructura común del
+ * dashboard (barra lateral de navegación, cabecera con bienvenida y botón de
+ * logout, panel central) y declara el método {@link #setupRoleDashboard()} como
+ * punto de extensión para que las subclases ({@link DashboardAgentGUI} y
+ * {@link DashboardUserGUI}) personalicen el contenido del área central según el
+ * rol del usuario.</p>
  *
- * <p>Tras un logout, reinicia el cliente Retrofit mediante
- * {@link com.ticketmaster.ticketplusclient.api.ClientAPI#reset()} y abre de nuevo
- * la ventana de {@link LoginGUI}.</p>
+ * <p>
+ * Tras un logout, reinicia el cliente Retrofit mediante
+ * {@link com.ticketmaster.ticketplusclient.api.ClientAPI#reset()} y abre de
+ * nuevo la ventana de {@link LoginGUI}.</p>
  *
  * @author Christian
  * @see DashboardAgentGUI
@@ -41,29 +44,32 @@ import javax.swing.plaf.basic.BasicButtonUI;
  */
 public class DashboardBaseGUI extends javax.swing.JFrame {
 
-    /** Servicio de autenticación utilizado para gestionar el logout. */
-    private final AuthService authService;
-    
     /**
-     * Layour de tarjetas que gestiona la navegacion del area central ({@code pnlCCenter}).
-     * Se inicializa en {@link #setupCenterLayout()} antes del hook {@link #setupRoleDashboard()}
+     * Servicio de autenticación utilizado para gestionar el logout.
+     */
+    private final AuthService authService;
+
+    /**
+     * Layour de tarjetas que gestiona la navegacion del area central
+     * ({@code pnlCCenter}). Se inicializa en {@link #setupCenterLayout()} antes
+     * del hook {@link #setupRoleDashboard()}
      */
     private CardLayout centerCardLayout;
-    
+
     /**
-    * Referencia al panel de listado de tickets, compartida por ambos roles.
-    * Se asigna en {@link #setupRoleDashboard()} de cada subclase y se usa
-    * para refrescar la lista tras crear o modificar un ticket.
-    */
+     * Referencia al panel de listado de tickets, compartida por ambos roles. Se
+     * asigna en {@link #setupRoleDashboard()} de cada subclase y se usa para
+     * refrescar la lista tras crear o modificar un ticket.
+     */
     protected TicketListPanel ticketListPanel;
-    
+
     /**
-    * Referencia al panel de creacion de ticket, compartida por ambos roles.
-    * Se asigna en {@link #setupRoleDashboard()} de cada subclase y se usa
-    * para refrescar la lista tras crear o modificar un ticket.
-    */
+     * Referencia al panel de creacion de ticket, compartida por ambos roles. Se
+     * asigna en {@link #setupRoleDashboard()} de cada subclase y se usa para
+     * refrescar la lista tras crear o modificar un ticket.
+     */
     protected NewTicketPanel newTicketPanel;
-    
+
     /**
      * Crea una nueva instancia del dashboard base, inicializando el servicio de
      * autenticación, los componentes gráficos, la barra lateral, la información
@@ -71,9 +77,9 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
      * {@link #setupRoleDashboard()}.
      */
     public DashboardBaseGUI() {
-        
+
         this.authService = new AuthService();
-        
+
         initComponents();
         setupCenterLayout();
         setupSidebarButtons();
@@ -314,120 +320,162 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
     /**
      * Inicializa el {@link CardLayout} sobre {@code pnlCCenter}.
      */
-    private void setupCenterLayout(){
+    private void setupCenterLayout() {
         centerCardLayout = new CardLayout();
         pnlCCenter.setLayout(centerCardLayout);
     }
-    
+
     /**
      * Registra un panel en el area central bajo un nombre de tarjeta.
-     * 
+     *
      * @param panel panel a registrar
-     * @param cardName nombre clave para referenciarlo con {@link #showCenterPanel}
+     * @param cardName nombre clave para referenciarlo con
+     * {@link #showCenterPanel}
      */
-    protected void addCenterPanel(JPanel panel, String cardName){
+    protected void addCenterPanel(JPanel panel, String cardName) {
         pnlCCenter.add(panel, cardName);
     }
-    
+
     /**
      * Muestra el panel registrado bajo el nombre indicado en el area central.
-     * 
-     * @param cardName nombre con el que se registro el panel en {@link #addCenterPanel}
+     *
+     * @param cardName nombre con el que se registro el panel en
+     * {@link #addCenterPanel}
      */
-    protected void showCenterPanel(String cardName){
+    protected void showCenterPanel(String cardName) {
         centerCardLayout.show(pnlCCenter, cardName);
     }
-    
+
     /**
-     * Devuelve el panel central ({@code pnlCCenter}) gestionado por le CardLayout.
-     * Disponible para subclases que necesiten añadir componentes directamente.
+     * Devuelve el panel central ({@code pnlCCenter}) gestionado por le
+     * CardLayout. Disponible para subclases que necesiten añadir componentes
+     * directamente.
      *
      * @return el {@link JPanel} central ({@code pnlCCenter}) del dashboard
      */
-    protected JPanel getCenterPanel(){
+    protected JPanel getCenterPanel() {
         return pnlCCenter;
     }
-    
+
     /**
      * Hool de inicializacion de rol.
-     * 
-     * <p>Las subclases sobrescriben este metodo para registrar sus paneles con
-     * {@link #addCenterPanel} y mostrar la vista inicial con {@link #showCenterPanel}.</P>
-     * 
+     *
+     * <p>
+     * Las subclases sobrescriben este metodo para registrar sus paneles con
+     * {@link #addCenterPanel} y mostrar la vista inicial con
+     * {@link #showCenterPanel}.</P>
+     *
      */
-    protected void setupRoleDashboard(){}
-    
-    /**
-     * Acción del botón Home (posición superior de la sidebar).
-     * Las subclases sobreescriben este método para definir su navegación.
-     */
-    protected void onSidebarButtonHome(){}
+    protected void setupRoleDashboard() {
+    }
 
     /**
-     * Acción del botón 1 de la barra lateral.
-     * Las subclases sobreescriben este método para definir su navegación.
+     * Acción del botón Home (posición superior de la sidebar). Las subclases
+     * sobreescriben este método para definir su navegación.
      */
-    protected void onSidebarButton1(){}
+    protected void onSidebarButtonHome() {
+    }
 
     /**
-     * Acción del botón 2 de la barra lateral.
-     * Las subclases sobreescriben este método para definir su navegación.
+     * Acción del botón 1 de la barra lateral. Las subclases sobreescriben este
+     * método para definir su navegación.
      */
-    protected void onSidebarButton2(){}
+    protected void onSidebarButton1() {
+    }
 
     /**
-     * Acción del botón 3 de la barra lateral.
-     * Las subclases sobreescriben este método para definir su navegación.
+     * Acción del botón 2 de la barra lateral. Las subclases sobreescriben este
+     * método para definir su navegación.
      */
-    protected void onSidebarButton3(){}
+    protected void onSidebarButton2() {
+    }
 
     /**
-     * Acción del botón 4 de la barra lateral.
-     * Las subclases sobreescriben este método para definir su navegación.
+     * Acción del botón 3 de la barra lateral. Las subclases sobreescriben este
+     * método para definir su navegación.
      */
-    protected void onSidebarButton4(){}
+    protected void onSidebarButton3() {
+    }
 
     /**
-     * Acción del botón 5 de la barra lateral.
-     * Las subclases sobreescriben este método para definir su navegación.
+     * Acción del botón 4 de la barra lateral. Las subclases sobreescriben este
+     * método para definir su navegación.
      */
-    protected void onSidebarButton5(){}
-    
+    protected void onSidebarButton4() {
+    }
+
+    /**
+     * Acción del botón 5 de la barra lateral. Las subclases sobreescriben este
+     * método para definir su navegación.
+     */
+    protected void onSidebarButton5() {
+    }
+
     /**
      * Configura el layout y el comportamiento visual de los botones de la barra
      * lateral de navegación, incluyendo el efecto hover (cambio de color al
      * pasar el ratón) mediante un {@link MouseListener} anónimo.
      */
-    private void setupSidebarButtons(){
-        
+    /**
+     * Configura el layout y el comportamiento visual de los botones de la barra
+     * lateral de navegación, incluyendo el efecto hover (cambio de color al
+     * pasar el ratón) mediante un {@link MouseListener} anónimo.
+     */
+    private void setupSidebarButtons() {
+
         pnlSide.removeAll();
         pnlSide.setLayout(new BorderLayout());
-        
-        //Boton Home - Anclado al norte del sidebar.
+
+        // Boton Home - Anclado al norte del sidebar.
         jPanel2.setLayout(new GridBagLayout());
         jPanel2.setPreferredSize(new Dimension(80, 80));
         pnlSide.add(jPanel2, BorderLayout.NORTH);
-        
-        //Botones del panel central - Centrados verticalmente.
+
+        /*
+     * Iconos y tooltips de la barra lateral.
+     * Se configuran aquí para no tocar initComponents(), que es código generado por NetBeans.
+         */
+        jButtonHome.setToolTipText("Tickets");
+
+        jButton1.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-cuenta-de-prueba-40.png")));
+        jButton1.setToolTipText("Gestión de usuarios");
+
+        jButton2.setToolTipText("Estadísticas");
+        jButton3.setToolTipText("Opción 3");
+        jButton4.setToolTipText("Opción 4");
+        jButton5.setToolTipText("Opción 5");
+        jButtonLogout.setToolTipText("Cerrar sesión");
+
+        // Botones del panel central - Centrados verticalmente.
         JPanel pnlMiddle = new JPanel();
         pnlMiddle.setBackground(new Color(21, 25, 28));
         pnlMiddle.setLayout(new BoxLayout(pnlMiddle, BoxLayout.Y_AXIS));
-        
+
         pnlMiddle.add(Box.createVerticalGlue());
+
         JButton[] navButtons = {jButton1, jButton2, jButton3, jButton4, jButton5};
-        for(JButton button : navButtons){
+
+        for (JButton button : navButtons) {
             button.setAlignmentX(Component.CENTER_ALIGNMENT);
             button.setMaximumSize(new Dimension(40, 40));
+            button.setPreferredSize(new Dimension(40, 40));
+            button.setMinimumSize(new Dimension(40, 40));
+            button.setFocusPainted(false);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(true);
+            button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
             pnlMiddle.add(button);
             pnlMiddle.add(Box.createRigidArea(new Dimension(0, 8)));
         }
+
         pnlMiddle.add(Box.createVerticalGlue());
         pnlSide.add(pnlMiddle, BorderLayout.CENTER);
-        
-        //Boton Logout - Anclado al sur.
+
+        // Boton Logout - Anclado al sur.
         jPanel3.setLayout(new GridBagLayout());
-        jPanel3.setPreferredSize(new Dimension(80,80));
-        jPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,15,0));
+        jPanel3.setPreferredSize(new Dimension(80, 80));
+        jPanel3.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         pnlSide.add(jPanel3, BorderLayout.SOUTH);
 
         for (JButton button : navButtons) {
@@ -455,39 +503,39 @@ public class DashboardBaseGUI extends javax.swing.JFrame {
                 public void mouseExited(MouseEvent e) {
                     button.setBackground(new Color(21, 25, 28));
                 }
-
             });
         }
     }
-    
+
     /**
-     * Actualiza la etiqueta de bienvenida de la cabecera con el nombre del usuario
-     * de la sesión activa obtenido de {@link SessionManager}.
+     * Actualiza la etiqueta de bienvenida de la cabecera con el nombre del
+     * usuario de la sesión activa obtenido de {@link SessionManager}.
      */
-    private void sessionInfo(){
+    private void sessionInfo() {
         SessionManager session = SessionManager.getInstance();
-        if(session.isLoggedIn()){
-            jLabelWelcomeUser.setText("Welcome "+session.getUsername());
+        if (session.isLoggedIn()) {
+            jLabelWelcomeUser.setText("Welcome " + session.getUsername());
         }
     }
-    
+
     /**
      * Inicia el proceso de logout: deshabilita el botón para evitar pulsaciones
-     * múltiples, llama a {@link AuthService#logout(Runnable)} de forma asíncrona
-     * y, al completar, abre la ventana de {@link LoginGUI} y cierra el dashboard.
+     * múltiples, llama a {@link AuthService#logout(Runnable)} de forma
+     * asíncrona y, al completar, abre la ventana de {@link LoginGUI} y cierra
+     * el dashboard.
      */
-    private void doLogout(){
+    private void doLogout() {
         jButtonLogout.setEnabled(false);
         jButtonLogout.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        
-        authService.logout(() ->{
-        LoginGUI login = new LoginGUI();
-        login.setVisible(true);
-        this.dispose();
+
+        authService.logout(() -> {
+            LoginGUI login = new LoginGUI();
+            login.setVisible(true);
+            this.dispose();
         });
     }
-    
-        
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
