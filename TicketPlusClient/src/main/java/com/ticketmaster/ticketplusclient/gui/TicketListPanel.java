@@ -24,7 +24,11 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.swing.BorderFactory;
@@ -91,6 +95,11 @@ public class TicketListPanel extends JPanel{
     private JButton prevBtn;
     private JButton nextBtn;
     private JComboBox<String> pageCombo;
+    private enum SortOrder { OLDEST_FIRST, NEWEST_FIRST }
+    private SortOrder sortOrder = SortOrder.OLDEST_FIRST;
+    private JButton sortBtn;
+    
+    
     
     private final TicketService ticketService = new TicketService();
     
@@ -327,7 +336,24 @@ public class TicketListPanel extends JPanel{
         newBtn.addMouseListener(hoverEffect(newBtn, ACCENT_BLUE, ACCENT_BLUE.darker()));
         newBtn.addActionListener(e -> onNewTicket.run());
         
-        bar.add(newBtn, BorderLayout.WEST);
+        sortBtn = new JButton("↑ Oldest first");
+        sortBtn.setBackground(BG_DARK);
+        sortBtn.setForeground(TEXT_MUTED);
+        sortBtn.setFocusPainted(false);
+        sortBtn.setFont(sortBtn.getFont().deriveFont(12f));
+        sortBtn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(60, 70, 80), 1, true),
+            BorderFactory.createEmptyBorder(4, 14, 4, 14)
+        ));
+        sortBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        sortBtn.addActionListener(e -> toggleSortOrder());
+
+        JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        leftButtons.setBackground(BG_MID);
+        leftButtons.add(newBtn);
+        leftButtons.add(sortBtn);
+        
+        bar.add(leftButtons, BorderLayout.WEST);
         bar.add(buildFilterBar(), BorderLayout.EAST);
         
         return bar;
@@ -576,6 +602,7 @@ public class TicketListPanel extends JPanel{
             if("All".equals(filter) || filter.equals(t.status)) filtered.add(t);
         }
         
+        sortFiltered();
         refreshStats();
         refreshFilterBar();
         renderPage();
@@ -963,6 +990,62 @@ public class TicketListPanel extends JPanel{
     // Métodos auxiliares
     // -------------------------------------------------------------------------
 
+    /**
+    * Alterna el orden de clasificación entre más antiguo primero y más nuevo
+    * primero, actualiza el texto del botón y reordena la lista visible.
+    */
+    private void toggleSortOrder() {
+        sortOrder = (sortOrder == SortOrder.OLDEST_FIRST)
+                ? SortOrder.NEWEST_FIRST
+                : SortOrder.OLDEST_FIRST;
+
+        sortBtn.setText(sortOrder == SortOrder.OLDEST_FIRST
+                ? "↑ Oldest first"
+                : "↓ Newest first");
+
+        sortFiltered();
+        currentPage = 0;
+        renderPage();
+        syncPageCombo();
+    }
+
+    /**
+     * Ordena {@link #filtered} según el orden activo, usando {@code createdAt}
+     * como criterio. Los tickets sin fecha válida se colocan al final.
+     */
+    private void sortFiltered() {
+        Comparator<TicketRow> byDate = Comparator.comparing(
+            t -> parseTicketDate(t.createdAt),
+            Comparator.nullsLast(Comparator.naturalOrder())
+        );
+
+        if (sortOrder == SortOrder.NEWEST_FIRST) {
+            byDate = byDate.reversed();
+        }
+
+        filtered.sort(byDate);
+    }
+
+    /**
+     * Intenta parsear la cadena de fecha de un ticket en los formatos habituales.
+     *
+     * @param raw cadena de fecha del servidor
+     * @return instancia de {@link LocalDateTime} o {@code null} si falla el parseo
+     */
+    private LocalDateTime parseTicketDate(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        for (String pattern : new String[]{
+                "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                "yyyy-MM-dd HH:mm:ss"}) {
+            try {
+                return LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(pattern));
+            } catch (DateTimeParseException ignored) {}
+        }
+        return null;
+    }
+    
     /**
      * Cuenta los tickets de una lista que tienen un estado determinado.
      *
