@@ -21,6 +21,7 @@ public class TicketDTO {
     private String agent;
     private String createdAt;
     private String resolvedAt;
+    private int createdByPoints;
     
     public TicketDTO(){
         
@@ -104,6 +105,14 @@ public class TicketDTO {
 
     public void setResolvedAt(String resolvedAt) {
         this.resolvedAt = resolvedAt;
+    }
+    
+    public int getCreatedByPoints(){ 
+        return createdByPoints; 
+    }
+    
+    public void setCreatedByPoints(int points) {
+        this.createdByPoints = points; 
     }
     
     

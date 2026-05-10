@@ -967,7 +967,8 @@ public class TicketListPanel extends JPanel{
                             dto.getStatus(),
                             dto.getCreatedBy(),
                             dto.getAgent() != null ? dto.getAgent() : "Sin asignar",
-                            dto.getCreatedAt()
+                            dto.getCreatedAt(),
+                            dto.getCreatedByPoints() > 0 ? dto.getCreatedByPoints() : 100 // default 100 hasta que el backend implemente el campo
                             
                     ));
                 }
@@ -1014,16 +1015,25 @@ public class TicketListPanel extends JPanel{
      * como criterio. Los tickets sin fecha válida se colocan al final.
      */
     private void sortFiltered() {
-        Comparator<TicketRow> byDate = Comparator.comparing(
-            t -> parseTicketDate(t.createdAt),
-            Comparator.nullsLast(Comparator.naturalOrder())
-        );
+        Comparator<TicketRow> byPointsThenDate = Comparator
+            // 1º: usuario con MÁS puntos primero
+            .comparingInt((TicketRow t) -> -t.createdByPoints)
+            // 2º: dentro del mismo usuario, ticket más antiguo primero
+            .thenComparing(
+                t -> parseTicketDate(t.createdAt),
+                Comparator.nullsLast(Comparator.naturalOrder())
+            );
 
         if (sortOrder == SortOrder.NEWEST_FIRST) {
-            byDate = byDate.reversed();
+            byPointsThenDate = Comparator
+                .comparingInt((TicketRow t) -> -t.createdByPoints)
+                .thenComparing(
+                    t -> parseTicketDate(t.createdAt),
+                    Comparator.nullsLast(Comparator.reverseOrder())
+                );
         }
 
-        filtered.sort(byDate);
+        filtered.sort(byPointsThenDate);
     }
 
     /**
@@ -1148,6 +1158,8 @@ public class TicketListPanel extends JPanel{
         public final String agent;
         
         public final String createdAt;
+        
+        public final int createdByPoints;
 
         /**
          * Crea un nuevo registro de ticket con todos sus campos.
@@ -1163,7 +1175,8 @@ public class TicketListPanel extends JPanel{
          */
         public TicketRow(Long id, String ref, String title, String description,
                          String priority, String status,
-                         String createdBy, String agent, String createdAt) {
+                         String createdBy, String agent, String createdAt,
+                         int createdByPoints) {
             this.id = id;
             this.ref = ref;
             this.title = title;
@@ -1173,6 +1186,7 @@ public class TicketListPanel extends JPanel{
             this.createdBy = createdBy;
             this.agent = agent;
             this.createdAt = createdAt;
+            this.createdByPoints = createdByPoints;
         }
     }
     
