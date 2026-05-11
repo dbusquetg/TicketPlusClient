@@ -958,6 +958,9 @@ public class TicketListPanel extends JPanel{
 
                 allTickets.clear();
                 for(TicketDTO dto: tickets){
+                    System.out.println(">>> TICKET [" + dto.getRef() + "] "
+                    + "createdBy: [" + dto.getCreatedBy() + "] "
+                    + "points: [" + dto.getPoints() + "]");
                     allTickets.add(new TicketRow(
                             dto.getId(),
                             dto.getRef(),
@@ -968,7 +971,7 @@ public class TicketListPanel extends JPanel{
                             dto.getCreatedBy(),
                             dto.getAgent() != null ? dto.getAgent() : "Sin asignar",
                             dto.getCreatedAt(),
-                            dto.getCreatedByPoints() > 0 ? dto.getCreatedByPoints() : 100 // default 100 hasta que el backend implemente el campo
+                            dto.getPoints() > 0 ? dto.getPoints() : 100 // default 100 hasta que el backend implemente el campo
                             
                     ));
                 }
