@@ -75,18 +75,18 @@ public class DashboardUserGUI extends DashboardBaseGUI {
         
         statsPanel = new StatsPanel(() -> showCenterPanel("tickets"), true);
         
-        addCenterPanel(
-                ticketListPanel,
-                "tickets"
+        newTicketPanel = new NewTicketPanel(
+        () -> {
+            ticketListPanel.refresh();     // ← recarga desde el servidor
+            showCenterPanel("tickets");
+        },
+            () -> showCenterPanel("tickets")
         );
-        addCenterPanel(
-                new NewTicketPanel(
-                        () ->showCenterPanel("tickets"),
-                        () ->showCenterPanel("tickets")
-                ),
-                "newTicket"
-        );
-        addCenterPanel(statsPanel,      "stats");
+        
+        addCenterPanel(ticketListPanel,  "tickets");
+        addCenterPanel(newTicketPanel,   "newTicket");
+        addCenterPanel(statsPanel,       "stats");
+
         showCenterPanel("tickets");
     }
     
