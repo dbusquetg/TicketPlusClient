@@ -1047,15 +1047,23 @@ public class TicketListPanel extends JPanel{
      */
     private LocalDateTime parseTicketDate(String raw) {
         if (raw == null || raw.isBlank()) return null;
-        for (String pattern : new String[]{
-                "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
-                "yyyy-MM-dd'T'HH:mm:ss",
-                "yyyy-MM-dd'T'HH:mm:ss.SSS",
-                "yyyy-MM-dd HH:mm:ss"}) {
-            try {
-                return LocalDateTime.parse(raw, DateTimeFormatter.ofPattern(pattern));
-            } catch (DateTimeParseException ignored) {}
-        }
+        try {
+            // Acepta cualquier numero de decimales (1-9) y tambien sin decimales
+            DateTimeFormatter flexible = new java.time.format.DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+                    .optionalStart()
+                    .appendFraction(java.time.temporal.ChronoField.NANO_OF_SECOND, 1, 9, true)
+                    .optionalEnd()
+                    .toFormatter();
+            return LocalDateTime.parse(raw, flexible);
+        } catch (DateTimeParseException ignored) {}
+
+        // Formato alternativo con espacio en lugar de T
+        try {
+            return LocalDateTime.parse(raw,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException ignored) {}
+
         return null;
     }
     

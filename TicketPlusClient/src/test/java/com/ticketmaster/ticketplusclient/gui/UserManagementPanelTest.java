@@ -1,4 +1,4 @@
-package com.tickemaster.ticketplusclient.gui;
+package com.ticketmaster.ticketplusclient.gui;
 
 import com.ticketmaster.ticketplusclient.api.ClientAPI;
 import com.ticketmaster.ticketplusclient.session.SessionManager;
